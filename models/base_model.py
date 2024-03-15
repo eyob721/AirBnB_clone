@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """BaseModel
 
-This module contains the class definition of the Base Model class which is the
-parent class of all other classes.
+This module contains the class definition of the BaseModel class, which is
+the parent class of all other classes that are used for the AirBnB console.
 
 """
 import uuid
@@ -18,7 +18,7 @@ class BaseModel:
         self.created_at = self.updated_at = datetime.now()
 
     def __str__(self):
-        """String representation of instance"""
+        """String representation of the instance"""
         return f"[{type(self).__name__}] ({self.id}) {self.__dict__}"
 
     def save(self):
@@ -34,4 +34,3 @@ class BaseModel:
                 continue
             obj_dict[attr] = self.__dict__[attr]
         return obj_dict
-
