@@ -30,7 +30,7 @@ class BaseModel:
         obj_dict = {"__class__": type(self).__name__}
         for attr in self.__dict__:
             if attr in ["created_at", "updated_at"]:
-                obj_dict[attr] = self.__dict__[attr].isoforamt()
+                obj_dict[attr] = self.__dict__[attr].isoformat()
                 continue
             obj_dict[attr] = self.__dict__[attr]
         return obj_dict
