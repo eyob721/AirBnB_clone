@@ -12,10 +12,18 @@ from datetime import datetime
 class BaseModel:
     """BaseModel class definition"""
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """BaseModel class constructor"""
-        self.id = str(uuid.uuid4())
-        self.created_at = self.updated_at = datetime.now()
+        if kwargs:
+            for key in kwargs:
+                if key in ["created_at", "updated_at"]:
+                    setattr(self, key, datetime.fromisoformat(kwargs[key]))
+                    continue
+                if key != "__class__":  # class name shouldn't be changed
+                    setattr(self, key, kwargs[key])
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = self.updated_at = datetime.now()
 
     def __str__(self):
         """String representation of the instance"""
