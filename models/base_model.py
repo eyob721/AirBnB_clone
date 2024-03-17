@@ -8,6 +8,8 @@ the parent class of all other classes that are used for the AirBnB console.
 import uuid
 from datetime import datetime
 
+import models
+
 
 class BaseModel:
     """BaseModel class definition"""
@@ -24,6 +26,7 @@ class BaseModel:
         else:
             self.id = str(uuid.uuid4())
             self.created_at = self.updated_at = datetime.now()
+            models.storage.new(self)
 
     def __str__(self):
         """String representation of the instance"""
@@ -32,6 +35,7 @@ class BaseModel:
     def save(self):
         """Saves the instance"""
         self.updated_at = datetime.now()
+        models.storage.save()
 
     def to_dict(self):
         """Returns dictionary representation of the instance"""
