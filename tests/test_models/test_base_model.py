@@ -14,6 +14,16 @@ class TestBaseModelClass(TestCase):
         b = BaseModel()
         self.assertTrue(type(b) is BaseModel)
 
+    def test_instantiation_with_kwargs(self):
+        b1 = BaseModel()
+        b1.program = "Alx"  # pyright: ignore
+        b1.cohort = 21  # pyright: ignore
+
+        b2 = BaseModel(**b1.to_dict())
+
+        self.assertEqual(b1.to_dict(), b2.to_dict())
+        self.assertFalse(b1 is b2)
+
 
 class TestBaseModelAttributes(TestCase):
     """Tests for the attributes of BaseModel"""
