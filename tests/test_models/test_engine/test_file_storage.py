@@ -107,3 +107,33 @@ class TestFileStorageMethods(TestCase):
 
         self.assertIn(key, __objects.keys())
         self.assertIs(__objects[key], b)
+
+
+class TestFileStorageLinkToBaseModel(TestCase):
+    """Test FileStorage link to BaseModel"""
+
+    def test_new_base_model_objects_are_add_to__objects(self):
+        b = BaseModel()
+
+        key = f"BaseModel.{b.id}"
+        __objects = getattr(FileStorage, "_FileStorage__objects")
+
+        self.assertIn(key, __objects.keys())
+        self.assertIs(__objects[key], b)
+
+    def test_save_method(self):
+        b = BaseModel()
+        __file_path = getattr(FileStorage, "_FileStorage__file_path")
+
+        b.save()
+        __objects = getattr(FileStorage, "_FileStorage__objects")
+        obj_dict_before = {
+            key: obj.to_dict() for key, obj in __objects.items()
+        }
+
+        FileStorage().reload()
+        __objects = getattr(FileStorage, "_FileStorage__objects")
+        obj_dict_after = {key: obj.to_dict() for key, obj in __objects.items()}
+
+        # Check what got out is the same as what got in
+        self.assertEqual(obj_dict_before, obj_dict_after)
