@@ -89,3 +89,13 @@ class TestFileStorageMethods(TestCase):
 
         # Check what got out is the same as what got in
         self.assertEqual(obj_dict_before, obj_dict_after)
+
+    def test_all_method(self):
+        f = FileStorage()
+
+        # check return type
+        self.assertIs(type(f.all()), dict)
+
+        # check return value
+        __objects = getattr(f, "_FileStorage__objects")
+        self.assertIs(__objects, f.all())
