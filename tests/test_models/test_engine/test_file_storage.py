@@ -4,6 +4,7 @@ import json
 import os
 from datetime import datetime, timedelta
 from unittest import TestCase
+from uuid import uuid4
 
 from models.base_model import BaseModel
 from models.engine.file_storage import FileStorage
@@ -99,3 +100,15 @@ class TestFileStorageMethods(TestCase):
         # check return value
         __objects = getattr(f, "_FileStorage__objects")
         self.assertIs(__objects, f.all())
+
+    def test_new_method(self):
+        id = str(uuid4())
+        b = BaseModel(**{"id": id, "Alx": "is awesome"})
+        f = FileStorage()
+        f.new(b)
+
+        key = f"{type(b).__name__}.{id}"
+        __objects = getattr(f, "_FileStorage__objects")
+
+        self.assertIn(key, __objects.keys())
+        self.assertIs(__objects[key], b)
