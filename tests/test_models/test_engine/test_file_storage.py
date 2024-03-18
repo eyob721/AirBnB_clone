@@ -57,3 +57,35 @@ class TestFileStorageAttributes(TestCase):
             # Check object
             obj = __objects[key]
             self.assertIsInstance(obj, BaseModel)
+
+
+class TestFileStorageMethods(TestCase):
+    """Tests for the methods of FileStorage class"""
+
+    def test_methods_exist(self):
+        f = FileStorage()
+
+        valid_methods = ["all", "new", "save", "reload"]
+        for method in valid_methods:
+            self.assertTrue(method in dir(f))
+
+    def test_save_and_reload(self):
+        f = FileStorage()
+        __file_path = getattr(f, "_FileStorage__file_path")
+
+        f.save()
+        __objects = getattr(f, "_FileStorage__objects")
+        obj_dict_before = {
+            key: obj.to_dict() for key, obj in __objects.items()
+        }
+
+        # Check file is created
+        if not os.path.exists(__file_path):
+            raise AssertionError("JSON file not found")
+
+        f.reload()
+        __objects = getattr(f, "_FileStorage__objects")
+        obj_dict_after = {key: obj.to_dict() for key, obj in __objects.items()}
+
+        # Check what got out is the same as what got in
+        self.assertEqual(obj_dict_before, obj_dict_after)
