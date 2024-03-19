@@ -248,3 +248,25 @@ EOF  create  delete  help  quit  show
         self.assertEqual(
             output_got, output_exp, msg="<help create> output is not correct"
         )
+
+    def test_help_show(self):
+        output_exp = (
+            "Usage: show <class name> <id>\n"
+            + "Prints the string representation of an instance, based on the "
+            + "class name and id\n"
+        )
+        output_got = get_cmd_output("help show")
+        self.assertEqual(
+            output_got, output_exp, msg="<help show> output is not correct"
+        )
+
+    def test_help_delete(self):
+        output_exp = (
+            "Usage: delete <class name> <id>\n"
+            + "Deletes an instance based on the class name and id, and saves "
+            + "the change into the JSON file\n"
+        )
+        output_got = get_cmd_output("help delete")
+        self.assertEqual(
+            output_got, output_exp, msg="<help delete> output is not correct"
+        )
