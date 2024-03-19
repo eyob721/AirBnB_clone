@@ -6,11 +6,15 @@ This is the entry point of the command interpreter
 """
 import cmd
 
+from models import storage
+from models.base_model import BaseModel
+
 
 class HBNBCommand(cmd.Cmd):
     """Class definition of the AirBnB clone - console"""
 
     prompt = "(hbnb) "
+    __valid_classes = ("BaseModel",)
 
     # COMMAND handlers
 
@@ -27,6 +31,25 @@ class HBNBCommand(cmd.Cmd):
         """Handler for empty line + ENTER"""
         pass
 
+    def do_create(self, args):
+        """Handler for the create command"""
+
+        # Check if class name is given
+        if not args:
+            print("** class name missing **")
+            return
+
+        # Check if given class name exists
+        class_name = args.split(" ", 1)[0]
+        if class_name not in self.__valid_classes:
+            print("** class doesn't exist **")
+            return
+
+        # Class exists, create an instance
+        obj = eval(f"{class_name}()")
+        storage.save()
+        print(obj.id)
+
     # HELP handlers
 
     def help_quit(self):
@@ -36,6 +59,14 @@ class HBNBCommand(cmd.Cmd):
     def help_EOF(self):
         """Help for the EOF command"""
         print("Usage: EOF\n" + "Quits from the console")
+
+    def help_create(self):
+        """Help for the create command"""
+        print(
+            "Usage: create <class name>\n"
+            + "Creates a new instance of given class name, saves it the "
+            + "JSON file and prints the id"
+        )
 
 
 if __name__ == "__main__":
