@@ -106,7 +106,21 @@ EOF  create  help  quit
 """
         output_got = get_cmd_output("help")
         self.assertEqual(
-            output_got, output_exp, msg="help output is not correct"
+            output_got, output_exp, msg="<help> output is not correct"
+        )
+
+    def test_help_quit(self):
+        output_exp = "Usage: quit\n" + "Quits from the console\n"
+        output_got = get_cmd_output("help quit")
+        self.assertEqual(
+            output_got, output_exp, msg="<help quit> output is not correct"
+        )
+
+    def test_help_EOF(self):
+        output_exp = "Usage: EOF\n" + "Quits from the console\n"
+        output_got = get_cmd_output("help EOF")
+        self.assertEqual(
+            output_got, output_exp, msg="<help EOF> output is not correct"
         )
 
     def test_help_create(self):
@@ -117,5 +131,5 @@ EOF  create  help  quit
         )
         output_got = get_cmd_output("help create")
         self.assertEqual(
-            output_got, output_exp, msg="help create output is not correct"
+            output_got, output_exp, msg="<help create> output is not correct"
         )
