@@ -5,6 +5,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from console import HBNBCommand
+from models import storage
 
 
 def get_cmd_output(command: str):
@@ -59,6 +60,39 @@ class TestHBNBCommandHandlers(TestCase):
             output_got, output_exp, msg="EOF output is not correct"
         )
 
+    def test_create(self):
+        # check for missing class name
+        output_exp = "** class name missing **\n"
+        output_got = get_cmd_output("create")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when class name is missing",
+        )
+
+        # check for invalid class name
+        output_exp = "** class doesn't exist **\n"
+        output_got = get_cmd_output("create MyModel")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when class doesn't exist",
+        )
+
+        # check for a valid classes
+        output_exp = r"^\w+-\w+-\w+-\w+-\w+$\n"
+        # TODO: add more classes later on
+        valid_classes = ("BaseModel",)
+        for _class in valid_classes:
+            output_got = get_cmd_output(f"create {_class}")
+            self.assertRegex(
+                output_got,
+                output_exp,
+                msg=f"incorrect output when valid class ({_class}) is given",
+            )
+            key = "{}.{}".format(_class, output_got.rstrip("\n"))
+            self.assertIn(key, storage.all())
+
 
 class TestHBNBCommandHelps(TestCase):
     """Tests for the helps sections of the console"""
@@ -67,10 +101,21 @@ class TestHBNBCommandHelps(TestCase):
         output_exp = """
 Documented commands (type help <topic>):
 ========================================
-EOF  help  quit
+EOF  create  help  quit
 
 """
         output_got = get_cmd_output("help")
         self.assertEqual(
             output_got, output_exp, msg="help output is not correct"
+        )
+
+    def test_help_create(self):
+        output_exp = (
+            "Usage: create <class name>\n"
+            + "Creates a new instance of given class name, saves it the "
+            + "JSON file and prints the id\n"
+        )
+        output_got = get_cmd_output("help create")
+        self.assertEqual(
+            output_got, output_exp, msg="help create output is not correct"
         )
