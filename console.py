@@ -79,7 +79,7 @@ class HBNBCommand(cmd.Cmd):
         # If instance exists, print it's string representation
         obj = storage.all()[key]
         print(obj)
-        
+
     def do_delete(self, args):
         """Handler for the delete command"""
 
@@ -134,6 +134,14 @@ class HBNBCommand(cmd.Cmd):
             "Usage: show <class name> <id>\n"
             + "Prints the string representation of an instance, based on the "
             + "class name and id"
+        )
+
+    def help_delete(self):
+        """Help for the delete command"""
+        print(
+            "Usage: delete <class name> <id>\n"
+            + "Deletes an instance based on the class name and id, and saves "
+            + "the change into the JSON file"
         )
 
 
