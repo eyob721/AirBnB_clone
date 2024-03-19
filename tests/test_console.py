@@ -126,8 +126,8 @@ EOF  create  help  quit
     def test_help_create(self):
         output_exp = (
             "Usage: create <class name>\n"
-            + "Creates a new instance of given class name, saves it the "
-            + "JSON file and prints the id\n"
+            + "Creates a new instance of the given class name, saves it to the"
+            + " JSON file and prints the id\n"
         )
         output_got = get_cmd_output("help create")
         self.assertEqual(

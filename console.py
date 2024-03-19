@@ -64,8 +64,8 @@ class HBNBCommand(cmd.Cmd):
         """Help for the create command"""
         print(
             "Usage: create <class name>\n"
-            + "Creates a new instance of given class name, saves it the "
-            + "JSON file and prints the id"
+            + "Creates a new instance of the given class name, saves it to the"
+            + " JSON file and prints the id"
         )
 
 
