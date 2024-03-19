@@ -79,6 +79,36 @@ class HBNBCommand(cmd.Cmd):
         # If instance exists, print it's string representation
         obj = storage.all()[key]
         print(obj)
+        
+    def do_delete(self, args):
+        """Handler for the delete command"""
+
+        # Check if class name is given
+        if not args:
+            print("** class name missing **")
+            return
+
+        # Check if given class name exist
+        class_name = args.split(" ", 1)[0]
+        if class_name not in self.__valid_classes:
+            print("** class doesn't exist **")
+            return
+
+        # Check if id is given
+        if len(args.split(" ")) == 1:
+            print("** instance id missing **")
+            return
+
+        # If id is given, check instance exists
+        id = args.split(" ", 2)[1]
+        key = f"{class_name}.{id}"
+        if key not in storage.all():
+            print("** no instance found **")
+            return
+
+        # If instance exists, delete it
+        del storage.all()[key]
+        storage.save()
 
     # HELP handlers
 
