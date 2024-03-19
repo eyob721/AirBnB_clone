@@ -50,25 +50,25 @@ class HBNBCommand(cmd.Cmd):
         storage.save()
         print(obj.id)
 
-    def  do_show(self, args):
+    def do_show(self, args):
         """Handler for the show command"""
-        
+
         # Check if class name is given
         if not args:
             print("** class name missing **")
             return
-        
+
         # Check if given class name exist
-        class_name = args.split(" ",1)[0]
+        class_name = args.split(" ", 1)[0]
         if class_name not in self.__valid_classes:
             print("** class doesn't exist **")
             return
-        
+
         # Check if id is given
         if len(args.split(" ")) == 1:
             print("** instance id missing **")
             return
-        
+
         # If id is given, check instance exists
         id = args.split(" ", 2)[1]
         key = f"{class_name}.{id}"
@@ -79,7 +79,7 @@ class HBNBCommand(cmd.Cmd):
         # If instance exists, print it's string representation
         obj = storage.all()[key]
         print(obj)
-        
+
     # HELP handlers
 
     def help_quit(self):
@@ -96,6 +96,14 @@ class HBNBCommand(cmd.Cmd):
             "Usage: create <class name>\n"
             + "Creates a new instance of the given class name, saves it to the"
             + " JSON file and prints the id"
+        )
+
+    def help_show(self):
+        """Help for the show command"""
+        print(
+            "Usage: show <class name> <id>\n"
+            + "Prints the string representation of an instance, based on the "
+            + "class name and id"
         )
 
 
