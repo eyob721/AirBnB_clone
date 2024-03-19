@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 from console import HBNBCommand
 from models import storage
+from models.base_model import BaseModel
 
 
 def get_cmd_output(command: str):
@@ -93,6 +94,53 @@ class TestHBNBCommandHandlers(TestCase):
             key = "{}.{}".format(_class, output_got.rstrip("\n"))
             self.assertIn(key, storage.all())
 
+    def test_show(self):
+        # check for missing class name
+        output_exp = "** class name missing **\n"
+        output_got = get_cmd_output("show")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when class name is missing",
+        )
+
+        # check for invalid class name
+        output_exp = "** class doesn't exist **\n"
+        output_got = get_cmd_output("show MyModel")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when class doesn't exist",
+        )
+
+        # check for missing id
+        output_exp = "** instance id missing **\n"
+        output_got = get_cmd_output("show BaseModel")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when id is missing",
+        )
+
+        # check for missing instance (invalid id)
+        output_exp = "** no instance found **\n"
+        output_got = get_cmd_output("show BaseModel 123")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when instance is not found (invalid id)",
+        )
+
+        # check for a correct usage
+        b = BaseModel()
+        output_exp = str(b) + "\n"
+        output_got = get_cmd_output(f"show BaseModel {b.id}")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output for correct usage",
+        )
+
 
 class TestHBNBCommandHelps(TestCase):
     """Tests for the helps sections of the console"""
@@ -101,7 +149,7 @@ class TestHBNBCommandHelps(TestCase):
         output_exp = """
 Documented commands (type help <topic>):
 ========================================
-EOF  create  help  quit
+EOF  create  delete  help  quit  show
 
 """
         output_got = get_cmd_output("help")
