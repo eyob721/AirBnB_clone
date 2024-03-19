@@ -151,10 +151,10 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output for correct usage",
         )
 
-    def test_delete(self):
+    def test_destroy(self):
         # check for missing class name
         output_exp = "** class name missing **\n"
-        output_got = get_cmd_output("delete")
+        output_got = get_cmd_output("destroy")
         self.assertEqual(
             output_got,
             output_exp,
@@ -163,7 +163,7 @@ class TestHBNBCommandHandlers(TestCase):
 
         # check for invalid class name
         output_exp = "** class doesn't exist **\n"
-        output_got = get_cmd_output("delete MyModel")
+        output_got = get_cmd_output("destroy MyModel")
         self.assertEqual(
             output_got,
             output_exp,
@@ -172,7 +172,7 @@ class TestHBNBCommandHandlers(TestCase):
 
         # check for missing id
         output_exp = "** instance id missing **\n"
-        output_got = get_cmd_output("delete BaseModel")
+        output_got = get_cmd_output("destroy BaseModel")
         self.assertEqual(
             output_got,
             output_exp,
@@ -181,7 +181,7 @@ class TestHBNBCommandHandlers(TestCase):
 
         # check for missing instance (invalid id)
         output_exp = "** no instance found **\n"
-        output_got = get_cmd_output("delete BaseModel 123")
+        output_got = get_cmd_output("destroy BaseModel 123")
         self.assertEqual(
             output_got,
             output_exp,
@@ -191,21 +191,21 @@ class TestHBNBCommandHandlers(TestCase):
         # check for a correct usage
         b = BaseModel()
         key = f"BaseModel.{b.id}"
-        HBNBCommand().onecmd(f"delete BaseModel {b.id}")
+        HBNBCommand().onecmd(f"destroy BaseModel {b.id}")
         self.assertNotIn(
             key,
             storage.all().keys(),
-            msg="instance not deleted",
+            msg="instance not destroyd",
         )
 
         # check with extra arguments
         b = BaseModel()
         key = f"BaseModel.{b.id}"
-        HBNBCommand().onecmd(f"delete BaseModel {b.id} hello from Alx")
+        HBNBCommand().onecmd(f"destroy BaseModel {b.id} hello from Alx")
         self.assertNotIn(
             key,
             storage.all().keys(),
-            msg="instance not deleted",
+            msg="instance not destroyd",
         )
 
 
@@ -216,7 +216,7 @@ class TestHBNBCommandHelps(TestCase):
         output_exp = """
 Documented commands (type help <topic>):
 ========================================
-EOF  create  delete  help  quit  show
+EOF  create  destroy  help  quit  show
 
 """
         output_got = get_cmd_output("help")
@@ -260,13 +260,13 @@ EOF  create  delete  help  quit  show
             output_got, output_exp, msg="<help show> output is not correct"
         )
 
-    def test_help_delete(self):
+    def test_help_destroy(self):
         output_exp = (
-            "Usage: delete <class name> <id>\n"
-            + "Deletes an instance based on the class name and id, and saves "
+            "Usage: destroy <class name> <id>\n"
+            + "destroys an instance based on the class name and id, and saves "
             + "the change into the JSON file\n"
         )
-        output_got = get_cmd_output("help delete")
+        output_got = get_cmd_output("help destroy")
         self.assertEqual(
-            output_got, output_exp, msg="<help delete> output is not correct"
+            output_got, output_exp, msg="<help destroy> output is not correct"
         )

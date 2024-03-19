@@ -80,8 +80,8 @@ class HBNBCommand(cmd.Cmd):
         obj = storage.all()[key]
         print(obj)
 
-    def do_delete(self, args):
-        """Handler for the delete command"""
+    def do_destroy(self, args):
+        """Handler for the destroy command"""
 
         # Check if class name is given
         if not args:
@@ -106,25 +106,25 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
             return
 
-        # If instance exists, delete it
+        # If instance exists, destroy it
         del storage.all()[key]
         storage.save()
-        
+
     def do_all(self, args):
         """Handler for all command"""
-    
+
         # When no argument is given, print all objects of all classes
         if not args:
             obj_list = [str(obj) for obj in storage.all().values()]
             print(obj_list)
             return
-        
+
         # Check if the given class name exists
         class_name = args.split(" ", 1)[0]
         if class_name not in self.__valid_classes:
             print("** class doesn't exist **")
             return
-        
+
         # If class exists, print all object with that class
         obj_list = [
             str(obj)
@@ -132,7 +132,7 @@ class HBNBCommand(cmd.Cmd):
             if type(obj).__name__ == class_name
         ]
         print(obj_list)
-        
+
     # HELP handlers
 
     def help_quit(self):
@@ -159,11 +159,11 @@ class HBNBCommand(cmd.Cmd):
             + "class name and id"
         )
 
-    def help_delete(self):
-        """Help for the delete command"""
+    def help_destroy(self):
+        """Help for the destroy command"""
         print(
-            "Usage: delete <class name> <id>\n"
-            + "Deletes an instance based on the class name and id, and saves "
+            "Usage: destroy <class name> <id>\n"
+            + "destroys an instance based on the class name and id, and saves "
             + "the change into the JSON file"
         )
 
