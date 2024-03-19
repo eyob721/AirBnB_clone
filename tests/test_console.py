@@ -141,6 +141,73 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output for correct usage",
         )
 
+        # check for a extra arguments
+        b = BaseModel()
+        output_exp = str(b) + "\n"
+        output_got = get_cmd_output(f"show BaseModel {b.id}")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output for correct usage",
+        )
+
+    def test_delete(self):
+        # check for missing class name
+        output_exp = "** class name missing **\n"
+        output_got = get_cmd_output("delete")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when class name is missing",
+        )
+
+        # check for invalid class name
+        output_exp = "** class doesn't exist **\n"
+        output_got = get_cmd_output("delete MyModel")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when class doesn't exist",
+        )
+
+        # check for missing id
+        output_exp = "** instance id missing **\n"
+        output_got = get_cmd_output("delete BaseModel")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when id is missing",
+        )
+
+        # check for missing instance (invalid id)
+        output_exp = "** no instance found **\n"
+        output_got = get_cmd_output("delete BaseModel 123")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when instance is not found (invalid id)",
+        )
+
+        # check for a correct usage
+        b = BaseModel()
+        key = f"BaseModel.{b.id}"
+        HBNBCommand().onecmd(f"delete BaseModel {b.id}")
+        self.assertNotIn(
+            key,
+            storage.all().keys(),
+            msg="instance not deleted",
+        )
+
+        # check with extra arguments
+        b = BaseModel()
+        key = f"BaseModel.{b.id}"
+        HBNBCommand().onecmd(f"delete BaseModel {b.id} hello from Alx")
+        self.assertNotIn(
+            key,
+            storage.all().keys(),
+            msg="instance not deleted",
+        )
+
 
 class TestHBNBCommandHelps(TestCase):
     """Tests for the helps sections of the console"""
