@@ -109,7 +109,30 @@ class HBNBCommand(cmd.Cmd):
         # If instance exists, delete it
         del storage.all()[key]
         storage.save()
-
+        
+    def do_all(self, args):
+        """Handler for all command"""
+    
+        # When no argument is given, print all objects of all classes
+        if not args:
+            obj_list = [str(obj) for obj in storage.all().values()]
+            print(obj_list)
+            return
+        
+        # Check if the given class name exists
+        class_name = args.split(" ", 1)[0]
+        if class_name not in self.__valid_classes:
+            print("** class doesn't exist **")
+            return
+        
+        # If class exists, print all object with that class
+        obj_list = [
+            str(obj)
+            for obj in storage.all().values()
+            if type(obj).__name__ == class_name
+        ]
+        print(obj_list)
+        
     # HELP handlers
 
     def help_quit(self):
