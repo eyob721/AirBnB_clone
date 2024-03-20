@@ -194,15 +194,20 @@ class HBNBCommand(cmd.Cmd):
         storage.save()
 
     def precmd(self, line):
-        """Handle class defined commands (i.e. <class name>.cmd())"""
-        pattern = r"^(?P<class>\w+)\.(?P<cmd>\w+)\((?P<args>.*)\)"
-        match = re.search(pattern, line)
-        if match:
-            print("match ->")
-            match = match.groupdict()
-            for key in match:
-                print("{}: {}".format(key, match[key]))
+        """Override precmd to handle commands like <class name>.cmd()"""
+        line_pattern = r"^(?P<class>\w+)\.(?P<cmd>\w+)\((?P<args>.*)\)"
+        line_match = re.search(line_pattern, line)
+        if line_match:
+            line_tokens = line_match.groupdict()
+            return "{} {} {}".format(
+                line_tokens["cmd"], line_tokens["class"], line_tokens["args"]
+            )
         return line
+
+    def onecmd(self, line):
+        """Override onecmd to call precmd before executing a command"""
+        line = self.precmd(line)
+        return super().onecmd(line)
 
     # HELP handlers
 
