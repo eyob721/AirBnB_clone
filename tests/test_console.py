@@ -16,8 +16,8 @@ def get_cmd_output(command: str):
         return output.getvalue()
 
 
-class TestHBNBCommandHandlers(TestCase):
-    """Tests for command handlers of the console"""
+class TestHBNBCommand(TestCase):
+    """Tests for the console"""
 
     def test_prompt(self):
         self.assertEqual(HBNBCommand.prompt, "(hbnb) ")
@@ -61,8 +61,11 @@ class TestHBNBCommandHandlers(TestCase):
             output_got, output_exp, msg="EOF output is not correct"
         )
 
-    def test_create(self):
-        # check for missing class name
+
+class TestHBNBCommandCreate(TestCase):
+    """Tests for the create command"""
+
+    def test_create_missing_class_name(self):
         output_exp = "** class name missing **\n"
         output_got = get_cmd_output("create")
         self.assertEqual(
@@ -71,6 +74,7 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output when class name is missing",
         )
 
+    def test_create_invalid_class_name(self):
         # check for invalid class name
         output_exp = "** class doesn't exist **\n"
         output_got = get_cmd_output("create MyModel")
@@ -80,7 +84,7 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output when class doesn't exist",
         )
 
-        # check for a valid classes
+    def test_create_correct_usage(self):
         output_exp = r"^\w+-\w+-\w+-\w+-\w+$\n"
         # TODO: add more classes later on
         valid_classes = ("BaseModel",)
@@ -94,8 +98,11 @@ class TestHBNBCommandHandlers(TestCase):
             key = "{}.{}".format(_class, output_got.rstrip("\n"))
             self.assertIn(key, storage.all())
 
-    def test_show(self):
-        # check for missing class name
+
+class TestHBNBCommandShow(TestCase):
+    """Tests for the show command"""
+
+    def test_show_missing_class_name(self):
         output_exp = "** class name missing **\n"
         output_got = get_cmd_output("show")
         self.assertEqual(
@@ -104,7 +111,7 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output when class name is missing",
         )
 
-        # check for invalid class name
+    def test_show_invalid_class_name(self):
         output_exp = "** class doesn't exist **\n"
         output_got = get_cmd_output("show MyModel")
         self.assertEqual(
@@ -113,7 +120,7 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output when class doesn't exist",
         )
 
-        # check for missing id
+    def test_show_missing_id(self):
         output_exp = "** instance id missing **\n"
         output_got = get_cmd_output("show BaseModel")
         self.assertEqual(
@@ -122,7 +129,7 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output when id is missing",
         )
 
-        # check for missing instance (invalid id)
+    def test_show_missing_instance(self):
         output_exp = "** no instance found **\n"
         output_got = get_cmd_output("show BaseModel 123")
         self.assertEqual(
@@ -131,7 +138,7 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output when instance is not found (invalid id)",
         )
 
-        # check for a correct usage
+    def test_show_correct_usage(self):
         b = BaseModel()
         output_exp = str(b) + "\n"
         output_got = get_cmd_output(f"show BaseModel {b.id}")
@@ -141,7 +148,8 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output for correct usage",
         )
 
-        # check for a extra arguments
+    def test_show_correct_usage_with_extra_arguments(self):
+        # extra arguments should be ignored
         b = BaseModel()
         output_exp = str(b) + "\n"
         output_got = get_cmd_output(f"show BaseModel {b.id}")
@@ -151,8 +159,11 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output for correct usage",
         )
 
-    def test_destroy(self):
-        # check for missing class name
+
+class HBNBCommandDestroy(TestCase):
+    """Tests for the destroy command"""
+
+    def test_destroy_missing_class_name(self):
         output_exp = "** class name missing **\n"
         output_got = get_cmd_output("destroy")
         self.assertEqual(
@@ -161,7 +172,7 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output when class name is missing",
         )
 
-        # check for invalid class name
+    def test_destroy_invalid_class_name(self):
         output_exp = "** class doesn't exist **\n"
         output_got = get_cmd_output("destroy MyModel")
         self.assertEqual(
@@ -170,7 +181,7 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output when class doesn't exist",
         )
 
-        # check for missing id
+    def test_destroy_missing_id(self):
         output_exp = "** instance id missing **\n"
         output_got = get_cmd_output("destroy BaseModel")
         self.assertEqual(
@@ -179,7 +190,7 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output when id is missing",
         )
 
-        # check for missing instance (invalid id)
+    def test_destroy_missing_instance(self):
         output_exp = "** no instance found **\n"
         output_got = get_cmd_output("destroy BaseModel 123")
         self.assertEqual(
@@ -188,7 +199,7 @@ class TestHBNBCommandHandlers(TestCase):
             msg="incorrect output when instance is not found (invalid id)",
         )
 
-        # check for a correct usage
+    def test_destroy_correct_usage(self):
         b = BaseModel()
         key = f"BaseModel.{b.id}"
         HBNBCommand().onecmd(f"destroy BaseModel {b.id}")
@@ -198,7 +209,8 @@ class TestHBNBCommandHandlers(TestCase):
             msg="instance not destroyd",
         )
 
-        # check with extra arguments
+    def test_destroy_correct_usage_with_extra_arguments(self):
+        # extra arguments should be ignored
         b = BaseModel()
         key = f"BaseModel.{b.id}"
         HBNBCommand().onecmd(f"destroy BaseModel {b.id} hello from Alx")
