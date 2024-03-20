@@ -9,13 +9,14 @@ import re
 
 from models import storage
 from models.base_model import BaseModel
+from models.user import User
 
 
 class HBNBCommand(cmd.Cmd):
     """Class definition of the AirBnB clone - console"""
 
     prompt = "(hbnb) "
-    __valid_classes = ("BaseModel",)
+    __valid_classes = ("BaseModel", "User")
 
     # COMMAND handlers
 
