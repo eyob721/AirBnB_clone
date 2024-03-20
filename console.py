@@ -8,7 +8,12 @@ import cmd
 import re
 
 from models import storage
+from models.amenity import Amenity
 from models.base_model import BaseModel
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
 from models.user import User
 
 
@@ -16,7 +21,15 @@ class HBNBCommand(cmd.Cmd):
     """Class definition of the AirBnB clone - console"""
 
     prompt = "(hbnb) "
-    __valid_classes = ("BaseModel", "User")
+    __valid_classes = (
+        "Amenity",
+        "BaseModel",
+        "City",
+        "Place",
+        "Review",
+        "State",
+        "User",
+    )
 
     # COMMAND handlers
 
