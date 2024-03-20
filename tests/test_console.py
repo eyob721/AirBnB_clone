@@ -7,7 +7,12 @@ from unittest.mock import patch
 
 from console import HBNBCommand
 from models import storage
+from models.amenity import Amenity
 from models.base_model import BaseModel
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
 from models.user import User
 
 
@@ -18,7 +23,15 @@ def get_cmd_output(command: str):
         return output.getvalue()
 
 
-valid_classes = ("BaseModel", "User")
+valid_classes = (
+    "Amenity",
+    "BaseModel",
+    "City",
+    "Place",
+    "Review",
+    "State",
+    "User",
+)
 
 
 class TestHBNBCommand(TestCase):
