@@ -237,14 +237,16 @@ EOF  create  destroy  help  quit  show
         )
 
     def test_help_quit(self):
-        output_exp = "Usage: quit\n" + "Quits from the console\n"
+        output_exp = "Usage: quit\n" + "Quits from the console.\n"
         output_got = get_cmd_output("help quit")
         self.assertEqual(
             output_got, output_exp, msg="<help quit> output is not correct"
         )
 
     def test_help_EOF(self):
-        output_exp = "Usage: EOF\n" + "Quits from the console\n"
+        output_exp = (
+            "Usage: EOF\n" + "Handles end-of-file signal. Exits the program.\n"
+        )
         output_got = get_cmd_output("help EOF")
         self.assertEqual(
             output_got, output_exp, msg="<help EOF> output is not correct"
@@ -254,7 +256,7 @@ EOF  create  destroy  help  quit  show
         output_exp = (
             "Usage: create <class name>\n"
             + "Creates a new instance of the given class name, saves it to the"
-            + " JSON file and prints the id\n"
+            + " JSON file and prints the id.\n"
         )
         output_got = get_cmd_output("help create")
         self.assertEqual(
@@ -265,7 +267,7 @@ EOF  create  destroy  help  quit  show
         output_exp = (
             "Usage: show <class name> <id>\n"
             + "Prints the string representation of an instance, based on the "
-            + "class name and id\n"
+            + "class name and id.\n"
         )
         output_got = get_cmd_output("help show")
         self.assertEqual(
@@ -275,8 +277,8 @@ EOF  create  destroy  help  quit  show
     def test_help_destroy(self):
         output_exp = (
             "Usage: destroy <class name> <id>\n"
-            + "destroys an instance based on the class name and id, and saves "
-            + "the change into the JSON file\n"
+            + "Destroys an instance based on the class name and id, and saves "
+            + "the change into the JSON file.\n"
         )
         output_got = get_cmd_output("help destroy")
         self.assertEqual(
