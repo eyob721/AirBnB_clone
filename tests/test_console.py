@@ -454,3 +454,42 @@ class HBNBCommandCountAdvanced(TestCase):
             output_exp = str(count) + "\n"
             output_got = get_cmd_output(f"{cls}.count()")
             self.assertEqual(output_got, output_exp)
+
+
+class TestHBNBCommandShowAdvance(TestCase):
+    """Tests for the <class name>.show() command"""
+
+    def test_show_invalid_class_name(self):
+        """<class name>.show() - invalid class name"""
+        output_exp = "** class doesn't exist **\n"
+        output_got = get_cmd_output("MyModel.show()")
+        self.assertEqual(output_got, output_exp)
+
+    def test_show_missing_id(self):
+        """<class name>.show() - missing id"""
+        output_exp = "** instance id missing **\n"
+        output_got = get_cmd_output("BaseModel.show()")
+        self.assertEqual(output_got, output_exp)
+
+    def test_show_missing_instance(self):
+        """<class name>.show() - invalid id"""
+        output_exp = "** no instance found **\n"
+        output_got = get_cmd_output("BaseModel.show(123)")
+        self.assertEqual(output_got, output_exp)
+
+    def test_show_correct_usage(self):
+        """<class name>.show() - valid class name and id"""
+        for cls in valid_classes:
+            obj = eval("{}()".format(cls))
+            output_exp = str(obj) + "\n"
+            output_got = get_cmd_output(f"{cls}.show({obj.id})")
+            self.assertEqual(output_got, output_exp)
+
+    def test_show_correct_usage_with_extra_arguments(self):
+        """<class name>.show() - valid class and id, but with extra args"""
+        # extra arguments should be ignored
+        for cls in valid_classes:
+            obj = eval("{}()".format(cls))
+            output_exp = str(obj) + "\n"
+            output_got = get_cmd_output(f"{cls}.show({obj.id}, extra, args)")
+            self.assertEqual(output_got, output_exp)
