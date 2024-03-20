@@ -429,3 +429,28 @@ class HBNBCommandAllAdvanced(TestCase):
             output_exp = str(obj_list) + "\n"
             output_got = get_cmd_output(f"{cls}.all()")
             self.assertEqual(output_got, output_exp)
+
+
+class HBNBCommandCountAdvanced(TestCase):
+    """Tests for the <class name>.count() command"""
+
+    def test_count(self):
+        """<class name>.count()"""
+        classes = (
+            "MyModel",
+            "Amenity",
+            "BaseModel",
+            "City",
+            "Place",
+            "Review",
+            "State",
+            "User",
+        )
+
+        for cls in classes:
+            count = [
+                type(obj).__name__ for obj in storage.all().values()
+            ].count(cls)
+            output_exp = str(count) + "\n"
+            output_got = get_cmd_output(f"{cls}.count()")
+            self.assertEqual(output_got, output_exp)
