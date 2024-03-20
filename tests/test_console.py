@@ -221,6 +221,43 @@ class HBNBCommandDestroy(TestCase):
         )
 
 
+class HBNBCommandAll(TestCase):
+    """Tests for the all command"""
+
+    def test_all_invalid_class_name(self):
+        output_exp = "** class doesn't exist **\n"
+        output_got = get_cmd_output("all MyModel")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when class doesn't exist",
+        )
+
+    def test_all_without_class_name(self):
+        obj_list = [str(obj) for obj in storage.all().values()]
+        output_exp = str(obj_list) + "\n"
+        output_got = get_cmd_output("all")
+        self.assertEqual(
+            output_got, output_exp, msg="incorrect output for `$ all`"
+        )
+
+    def test_all_with_class_name(self):
+        valid_classes = ("BaseModel",)
+        for _class in valid_classes:
+            obj_list = [
+                str(obj)
+                for obj in storage.all().values()
+                if type(obj).__name__ == _class
+            ]
+            output_exp = str(obj_list) + "\n"
+            output_got = get_cmd_output(f"all {_class}")
+            self.assertEqual(
+                output_got,
+                output_exp,
+                msg=f"incorrect output for `$ all {_class}`",
+            )
+
+
 class TestHBNBCommandHelps(TestCase):
     """Tests for the helps sections of the console"""
 
@@ -228,7 +265,7 @@ class TestHBNBCommandHelps(TestCase):
         output_exp = """
 Documented commands (type help <topic>):
 ========================================
-EOF  create  destroy  help  quit  show
+EOF  all  create  destroy  help  quit  show
 
 """
         output_got = get_cmd_output("help")
@@ -283,4 +320,16 @@ EOF  create  destroy  help  quit  show
         output_got = get_cmd_output("help destroy")
         self.assertEqual(
             output_got, output_exp, msg="<help destroy> output is not correct"
+        )
+
+    def test_help_all(self):
+        output_exp = (
+            "Usage: all [class name]\n"
+            + "Prints the string representation of all instances.\n"
+            + "With class name, then only string representation of instances "
+            + "with that class will be printed.\n"
+        )
+        output_got = get_cmd_output("help all")
+        self.assertEqual(
+            output_got, output_exp, msg="<help all> output is not correct"
         )
