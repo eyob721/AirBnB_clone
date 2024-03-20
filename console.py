@@ -137,18 +137,20 @@ class HBNBCommand(cmd.Cmd):
 
     def help_quit(self):
         """Help for the quit command"""
-        print("Usage: quit\n" + "Quits from the console")
+        print("Usage: quit\n" + "Quits from the console.")
 
     def help_EOF(self):
         """Help for the EOF command"""
-        print("Usage: EOF\n" + "Quits from the console")
+        print(
+            "Usage: EOF\n" + "Handles end-of-file signal. Exits the program."
+        )
 
     def help_create(self):
         """Help for the create command"""
         print(
             "Usage: create <class name>\n"
             + "Creates a new instance of the given class name, saves it to the"
-            + " JSON file and prints the id"
+            + " JSON file and prints the id."
         )
 
     def help_show(self):
@@ -156,15 +158,15 @@ class HBNBCommand(cmd.Cmd):
         print(
             "Usage: show <class name> <id>\n"
             + "Prints the string representation of an instance, based on the "
-            + "class name and id"
+            + "class name and id."
         )
 
     def help_destroy(self):
         """Help for the destroy command"""
         print(
             "Usage: destroy <class name> <id>\n"
-            + "destroys an instance based on the class name and id, and saves "
-            + "the change into the JSON file"
+            + "Destroys an instance based on the class name and id, and saves "
+            + "the change into the JSON file."
         )
 
     def help_all(self):
