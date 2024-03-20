@@ -34,45 +34,44 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """Handler for the create command"""
+        pattern = r"^(?P<class>\w+)?\ ?" + r"(?P<extra>.*)$"
+        tokens = re.search(pattern, args).groupdict()  # type: ignore
 
-        # Check if class name is given
-        if not args:
+        if not tokens["class"]:
             print("** class name missing **")
             return
 
-        # Check if given class name exists
-        class_name = args.split(" ", 1)[0]
-        if class_name not in self.__valid_classes:
+        if tokens["class"] not in self.__valid_classes:
             print("** class doesn't exist **")
             return
 
         # Class exists, create an instance
-        obj = eval(f"{class_name}()")
+        obj = eval("{}()".format(tokens["class"]))
         storage.save()
         print(obj.id)
 
     def do_show(self, args):
         """Handler for the show command"""
+        pattern = (
+            r"^(?P<class>\w+)?\ ?"
+            + r"(?P<id>[a-zA-Z0-9\-]+)?\ ?"
+            + r"(?P<extra>.*)$"
+        )
+        tokens = re.search(pattern, args).groupdict()  # type: ignore
 
-        # Check if class name is given
-        if not args:
+        if not tokens["class"]:
             print("** class name missing **")
             return
 
-        # Check if given class name exist
-        class_name = args.split(" ", 1)[0]
-        if class_name not in self.__valid_classes:
+        if tokens["class"] not in self.__valid_classes:
             print("** class doesn't exist **")
             return
 
-        # Check if id is given
-        if len(args.split(" ")) == 1:
+        if not tokens["id"]:
             print("** instance id missing **")
             return
 
-        # If id is given, check instance exists
-        id = args.split(" ", 2)[1]
-        key = f"{class_name}.{id}"
+        key = "{}.{}".format(tokens["class"], tokens["id"])
         if key not in storage.all():
             print("** no instance found **")
             return
@@ -83,26 +82,26 @@ class HBNBCommand(cmd.Cmd):
 
     def do_destroy(self, args):
         """Handler for the destroy command"""
+        pattern = (
+            r"^(?P<class>\w+)?\ ?"
+            + r"(?P<id>[a-zA-Z0-9\-]+)?\ ?"
+            + r"(?P<extra>.*)$"
+        )
+        tokens = re.search(pattern, args).groupdict()  # type: ignore
 
-        # Check if class name is given
-        if not args:
+        if not tokens["class"]:
             print("** class name missing **")
             return
 
-        # Check if given class name exist
-        class_name = args.split(" ", 1)[0]
-        if class_name not in self.__valid_classes:
+        if tokens["class"] not in self.__valid_classes:
             print("** class doesn't exist **")
             return
 
-        # Check if id is given
-        if len(args.split(" ")) == 1:
+        if not tokens["id"]:
             print("** instance id missing **")
             return
 
-        # If id is given, check instance exists
-        id = args.split(" ", 2)[1]
-        key = f"{class_name}.{id}"
+        key = "{}.{}".format(tokens["class"], tokens["id"])
         if key not in storage.all():
             print("** no instance found **")
             return
@@ -111,16 +110,37 @@ class HBNBCommand(cmd.Cmd):
         del storage.all()[key]
         storage.save()
 
+    def do_all(self, args):
+        """Handler for all command"""
+        pattern = r"^(?P<class>\w+)?\ ?" + r"(?P<extra>.*)$"
+        tokens = re.search(pattern, args).groupdict()  # type: ignore
+
+        if not tokens["class"]:
+            obj_list = [str(obj) for obj in storage.all().values()]
+            print(obj_list)
+            return
+
+        if tokens["class"] not in self.__valid_classes:
+            print("** class doesn't exist **")
+            return
+
+        obj_list = [
+            str(obj)
+            for obj in storage.all().values()
+            if type(obj).__name__ == tokens["class"]
+        ]
+        print(obj_list)
+
     def do_update(self, args):
         """Handler for the update command"""
-        parser = re.compile(
+        pattern = (
             r"^(?P<class>\w+)?\ ?"
             + r"(?P<id>[a-zA-Z0-9\-]+)?\ ?"
             + r"(?P<attr>[a-zA-Z0-9_]+)?\ ?"
             + r"(?P<value>[\"\'].*[\'\"]|[\w\-\.]+)?\ ?"
             + r"(?P<extra>.*)$"
         )
-        tokens = parser.search(args).groupdict()  # type: ignore
+        tokens = re.search(pattern, args).groupdict()  # type: ignore
 
         if not tokens["class"]:
             print("** class name missing **")
@@ -158,29 +178,6 @@ class HBNBCommand(cmd.Cmd):
         obj = storage.all()[key]
         setattr(obj, tokens["attr"], tokens["value"])
         storage.save()
-
-    def do_all(self, args):
-        """Handler for all command"""
-
-        # When no argument is given, print all objects of all classes
-        if not args:
-            obj_list = [str(obj) for obj in storage.all().values()]
-            print(obj_list)
-            return
-
-        # Check if the given class name exists
-        class_name = args.split(" ", 1)[0]
-        if class_name not in self.__valid_classes:
-            print("** class doesn't exist **")
-            return
-
-        # If class exists, print all object with that class
-        obj_list = [
-            str(obj)
-            for obj in storage.all().values()
-            if type(obj).__name__ == class_name
-        ]
-        print(obj_list)
 
     # HELP handlers
 
