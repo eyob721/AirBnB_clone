@@ -19,6 +19,7 @@ class TestFileStorageClass(TestCase):
     """Tests for the FileStorage class (general)"""
 
     def test_instance_type(self):
+        """Check instance of FileStorage is instance of FileStorage"""
         f = FileStorage()
         self.assertIs(type(f), FileStorage)
 
@@ -27,12 +28,14 @@ class TestFileStorageAttributes(TestCase):
     """Tests for the attributes of FileStorage class"""
 
     def test_attributes_exist(self):
+        """Check that the right attributes exist"""
         valid_attrs = ["_FileStorage__file_path", "_FileStorage__objects"]
 
         for attr in valid_attrs:
             self.assertTrue(attr in dir(FileStorage))
 
     def test__file_path(self):
+        """Check the __file_path type and value"""
         __file_path = getattr(FileStorage, "_FileStorage__file_path")
 
         # Check that __file_path is a str
@@ -42,6 +45,7 @@ class TestFileStorageAttributes(TestCase):
         self.assertRegex(__file_path, r"^.+\.json$")
 
     def test__objects(self):
+        """Check the __objects type and content"""
         __objects = getattr(FileStorage, "_FileStorage__objects")
 
         # Check that __objects is a dict
@@ -61,11 +65,13 @@ class TestFileStorageMethods(TestCase):
     """Tests for the methods of FileStorage class"""
 
     def test_methods_exist(self):
+        """Check that the right methods exist"""
         valid_methods = ["all", "new", "save", "reload"]
         for method in valid_methods:
             self.assertTrue(method in dir(FileStorage))
 
     def test_save_and_reload(self):
+        """Check that the save and reload methods work correctly"""
         f = FileStorage()
         __file_path = getattr(f, "_FileStorage__file_path")
 
@@ -75,7 +81,7 @@ class TestFileStorageMethods(TestCase):
             key: obj.to_dict() for key, obj in __objects.items()
         }
 
-        # Check file is created
+        # Check that the file is created
         if not os.path.exists(__file_path):
             raise AssertionError("JSON file not found")
 
@@ -87,6 +93,7 @@ class TestFileStorageMethods(TestCase):
         self.assertEqual(obj_dict_before, obj_dict_after)
 
     def test_all_method(self):
+        """Check return type and value of the all method"""
         f = FileStorage()
 
         # check return type
@@ -97,6 +104,7 @@ class TestFileStorageMethods(TestCase):
         self.assertIs(__objects, f.all())
 
     def test_new_method(self):
+        """Check that the new method works correctly"""
         id = str(uuid4())
         b = BaseModel(**{"id": id, "Alx": "is awesome"})
         f = FileStorage()
@@ -113,6 +121,7 @@ class TestFileStorageLinkToBaseModel(TestCase):
     """Test FileStorage link to BaseModel"""
 
     def test_new_base_model_objects_are_add_to__objects(self):
+        """Check that new instances are added to the __objects dictionary"""
         b = BaseModel()
 
         key = f"BaseModel.{b.id}"
@@ -122,6 +131,7 @@ class TestFileStorageLinkToBaseModel(TestCase):
         self.assertIs(__objects[key], b)
 
     def test_save_method(self):
+        """Check calling the save method from a BaseModel object"""
         b = BaseModel()
         __file_path = getattr(FileStorage, "_FileStorage__file_path")
 
