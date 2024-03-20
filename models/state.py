@@ -1,5 +1,5 @@
 #!/user/bin/python3
-"""we implement city class that inherites from BaseModel"""
+"""we implement state class that inherites from BaseModel"""
 import cmd
 from models.base_model import BaseModel
 
