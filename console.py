@@ -117,7 +117,7 @@ class HBNBCommand(cmd.Cmd):
             r"^(?P<class>\w+)?\ ?"
             + r"(?P<id>[a-zA-Z0-9\-]+)?\ ?"
             + r"(?P<attr>[a-zA-Z0-9_]+)?\ ?"
-            + r"(?P<value>[\"\']?[a-zA-Z0-9\.@\- ]+[\"\']?)?"
+            + r"(?P<value>[\"\'].*[\'\"]|[\w\-\.]+)?\ ?"
             + r"(?P<extra>.*)$"
         )
         tokens = parser.search(args).groupdict()  # type: ignore
