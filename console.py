@@ -5,6 +5,7 @@ This is the entry point of the command interpreter
 
 """
 import cmd
+import re
 
 from models import storage
 from models.base_model import BaseModel
@@ -108,6 +109,54 @@ class HBNBCommand(cmd.Cmd):
 
         # If instance exists, destroy it
         del storage.all()[key]
+        storage.save()
+
+    def do_update(self, args):
+        """Handler for the update command"""
+        parser = re.compile(
+            r"^(?P<class>\w+)?\ ?"
+            + r"(?P<id>[a-zA-Z0-9\-]+)?\ ?"
+            + r"(?P<attr>[a-zA-Z0-9_]+)?\ ?"
+            + r"(?P<value>[\"\']?[a-zA-Z0-9\.@\- ]+[\"\']?)?"
+            + r"(?P<extra>.*)$"
+        )
+        tokens = parser.search(args).groupdict()  # type: ignore
+
+        if not tokens["class"]:
+            print("** class name missing **")
+            return
+
+        if tokens["class"] not in self.__valid_classes:
+            print("** class doesn't exist **")
+            return
+
+        if not tokens["id"]:
+            print("** instance id missing **")
+            return
+
+        key = "{}.{}".format(tokens["class"], tokens["id"])
+        if key not in storage.all():
+            print("** no instance found **")
+            return
+
+        if not tokens["attr"]:
+            print("** attribute name missing **")
+            return
+
+        if not tokens["value"]:
+            print("** value missing **")
+            return
+
+        # Cast the attibute value to the attribute type
+        if tokens["value"].lstrip("-").isdigit():
+            tokens["value"] = int(tokens["value"])
+        elif tokens["value"].lstrip("-").replace(".", "").isnumeric():
+            tokens["value"] = float(tokens["value"])
+        else:
+            tokens["value"] = tokens["value"].strip("\"'")
+
+        obj = storage.all()[key]
+        setattr(obj, tokens["attr"], tokens["value"])
         storage.save()
 
     def do_all(self, args):
