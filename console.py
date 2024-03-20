@@ -210,7 +210,7 @@ class HBNBCommand(cmd.Cmd):
             args_pattern = (
                 r"^(?P<id>[\"\'][\w\-]*[\"\']|[\w\-]*)?,?\ ?"
                 + r"(?P<attr>[\"\'][\w_]+[\"\']|[\w_]+)?,?\ ?"
-                + r"(?P<value>[\"\'][\w\@\-\_ ]*[\"\']|[\w\@\-\_]*)?"
+                + r"(?P<value>[\"\'][\w\@\-\_\. ]*[\"\']|[\w\@\-\_\.]*)?"
                 + r"(?P<extra>.*)$"
             )
             args = re.search(args_pattern, line_tokens["args"])
