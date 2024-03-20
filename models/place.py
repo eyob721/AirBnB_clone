@@ -1,5 +1,5 @@
 #!/user/bin/python3
-"""we implement city class that inherites from BaseModel"""
+"""we implement place class that inherites from BaseModel"""
 from models.base_model import BaseModel
 
 
