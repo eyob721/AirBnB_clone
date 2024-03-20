@@ -227,6 +227,17 @@ class HBNBCommand(cmd.Cmd):
             + "with that class will be printed."
         )
 
+    def help_update(self):
+        """Help for the update command"""
+        print(
+            "Usage: update <class name> <id> <attribute name> <value>\n"
+            + "Updates an instance based on the class name and id by "
+            + "adding or updating an attribute.\n"
+            + "The change is saved to the JSON file."
+            + "The value is type casted when it is assigned and "
+            + "all extra arguments are ignored."
+        )
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
