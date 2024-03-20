@@ -8,11 +8,15 @@ from uuid import uuid4
 
 from models.base_model import BaseModel
 from models.engine.file_storage import FileStorage
+from models.user import User
 
 
 def remove_file(filepath):
     if os.path.exists(filepath):
         os.remove(filepath)
+
+
+valid_classes = ("BaseModel", "User")
 
 
 class TestFileStorageClass(TestCase):
@@ -54,8 +58,11 @@ class TestFileStorageAttributes(TestCase):
         # Check the contents of the __objects dictionary
         for key in __objects:
             # Check key pattern
-            # TODO: use actual class names e.g. (BaseModel|User)
-            self.assertRegex(key, r"^[a-zA-Z]+\.\w+-\w+-\w+-\w+-\w+$")
+            # NOTE: use valid classes, ({}) -> (BaseModel|User|...)
+            pattern = r"^({})+\.\w+-\w+-\w+-\w+-\w+$".format(
+                "|".join(valid_classes)
+            )
+            self.assertRegex(key, pattern)
             # Check object
             obj = __objects[key]
             self.assertIsInstance(obj, BaseModel)
@@ -105,32 +112,34 @@ class TestFileStorageMethods(TestCase):
 
     def test_new_method(self):
         """Check that the new method works correctly"""
-        id = str(uuid4())
-        b = BaseModel(**{"id": id, "Alx": "is awesome"})
-        f = FileStorage()
-        f.new(b)
+        for cls in valid_classes:
+            id = str(uuid4())
+            obj = eval("{}(**{})".format(cls, {"id": id, "Alx": "is awesome"}))
+            f = FileStorage()
+            f.new(obj)
 
-        key = f"{type(b).__name__}.{id}"
-        __objects = getattr(f, "_FileStorage__objects")
+            key = f"{type(obj).__name__}.{id}"
+            __objects = getattr(f, "_FileStorage__objects")
 
-        self.assertIn(key, __objects.keys())
-        self.assertIs(__objects[key], b)
+            self.assertIn(key, __objects.keys())
+            self.assertIs(__objects[key], obj)
 
 
 class TestFileStorageLinkToBaseModel(TestCase):
     """Test FileStorage link to BaseModel"""
 
-    def test_new_base_model_objects_are_add_to__objects(self):
+    def test_new_instances_are_add_to__objects(self):
         """Check that new instances are added to the __objects dictionary"""
-        b = BaseModel()
+        for cls in valid_classes:
+            obj = eval("{}()".format(cls))
 
-        key = f"BaseModel.{b.id}"
-        __objects = getattr(FileStorage, "_FileStorage__objects")
+            key = f"{cls}.{obj.id}"
+            __objects = getattr(FileStorage, "_FileStorage__objects")
 
-        self.assertIn(key, __objects.keys())
-        self.assertIs(__objects[key], b)
+            self.assertIn(key, __objects.keys())
+            self.assertIs(__objects[key], obj)
 
-    def test_save_method(self):
+    def test_save_method_from_BaseModel_object(self):
         """Check calling the save method from a BaseModel object"""
         b = BaseModel()
         __file_path = getattr(FileStorage, "_FileStorage__file_path")
