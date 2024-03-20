@@ -1,9 +1,9 @@
 #!/user/bin/python3
-"""we implement amenity class that inherites from BaseModel"""
-import cmd
+"""Amenity class"""
+
 from models.base_model import BaseModel
 
-class state(BaseModel):
-    """"Class definition of Amenity class"""
+class Amenity(BaseModel):
+    """"Amenity class definition """
     
     name = ""
