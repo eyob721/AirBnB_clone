@@ -167,6 +167,15 @@ class HBNBCommand(cmd.Cmd):
             + "the change into the JSON file"
         )
 
+    def help_all(self):
+        """Help for the all command"""
+        print(
+            "Usage: all [class name]\n"
+            + "Prints the string representation of all instances.\n"
+            + "With class name, then only string representation of instances "
+            + "with that class will be printed."
+        )
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
