@@ -199,6 +199,14 @@ class HBNBCommand(cmd.Cmd):
         line_match = re.search(line_pattern, line)
         if line_match:
             line_tokens = line_match.groupdict()
+
+            if line_tokens["cmd"] == "count":
+                count = [
+                    type(obj).__name__ for obj in storage.all().values()
+                ].count(line_tokens["class"])
+                print(count)
+                return ""
+
             return "{} {} {}".format(
                 line_tokens["cmd"], line_tokens["class"], line_tokens["args"]
             )
