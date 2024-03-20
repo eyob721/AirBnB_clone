@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """Tests for the AirBnB clone - console"""
+import os
 from io import StringIO
 from unittest import TestCase
 from unittest.mock import patch
@@ -258,6 +259,169 @@ class HBNBCommandAll(TestCase):
             )
 
 
+class TestHBNBCommandUpdate(TestCase):
+    """Tests for the update command"""
+
+    def test_update_missing_class_name(self):
+        output_exp = "** class name missing **\n"
+        output_got = get_cmd_output("update")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when class name is missing",
+        )
+
+    def test_update_invalid_class_name(self):
+        output_exp = "** class doesn't exist **\n"
+        output_got = get_cmd_output("update MyModel")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when class doesn't exist",
+        )
+
+    def test_update_missing_id(self):
+        output_exp = "** instance id missing **\n"
+        output_got = get_cmd_output("update BaseModel")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when id is missing",
+        )
+
+    def test_update_missing_instance(self):
+        output_exp = "** no instance found **\n"
+        output_got = get_cmd_output("update BaseModel 123")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when instance is not found (invalid id)",
+        )
+
+    def test_update_missing_attribute(self):
+        b = BaseModel()
+        output_exp = "** attribute name missing **\n"
+        output_got = get_cmd_output(f"update BaseModel {b.id}")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when attribute name is missing",
+        )
+
+    def test_update_missing_value(self):
+        b = BaseModel()
+        output_exp = "** value missing **\n"
+        output_got = get_cmd_output(f"update BaseModel {b.id} eg")
+        self.assertEqual(
+            output_got,
+            output_exp,
+            msg="incorrect output when value is missing",
+        )
+
+    def test_update_correct_usages(self):
+        b = BaseModel()
+
+        cases = {
+            "name": '"John Doe"',
+            "gender": "M",
+            "age": 47,
+            "height": 1.82,
+            "email": '"john@gmail.com"',
+        }
+
+        for attr in cases.keys():
+            HBNBCommand().onecmd(
+                "update BaseModel {} {} {}".format(b.id, attr, cases[attr])
+            )
+            # Check that attribute is set
+            self.assertIn(attr, b.to_dict(), msg="attribute not found")
+            if type(cases[attr]) is str:
+                self.assertEqual(
+                    getattr(b, attr),
+                    cases[attr].strip("\"'"),
+                    msg="correct value not set",
+                )
+            else:
+                self.assertEqual(
+                    getattr(b, attr), cases[attr], msg="correct value not set"
+                )
+
+            # Check that attribute value is properly casted
+            self.assertIs(
+                type(getattr(b, attr)),
+                type(cases[attr]),
+                msg="attribute value not properly casted",
+            )
+
+        # Check that it is saved
+        storage.reload()
+        key = f"BaseModel.{b.id}"
+        obj = storage.all()[key]
+        obj_dict = obj.to_dict()
+
+        for attr in cases:
+            self.assertIn(
+                attr, obj_dict, msg="attribute not found in saved object"
+            )
+            if type(cases[attr]) is str:
+                self.assertEqual(
+                    getattr(obj, attr),
+                    cases[attr].strip("\"'"),
+                    msg="correct value not set",
+                )
+            else:
+                self.assertEqual(
+                    getattr(obj, attr),
+                    cases[attr],
+                    msg="correct value not set",
+                )
+
+            # Check that attribute value is properly casted
+            self.assertIs(
+                type(getattr(obj, attr)),
+                type(cases[attr]),
+                msg="attribute value not properly casted in saved object",
+            )
+
+    def test_update_correct_usage_with_extra_args(self):
+        b = BaseModel()
+
+        HBNBCommand().onecmd(
+            f"update BaseModel {b.id} name 'John Doe' this is extra"
+        )
+        self.assertIn("name", b.to_dict(), msg="attribute not found")
+        self.assertEqual(
+            getattr(b, "name"), "John Doe", msg="correct value not set"
+        )
+        self.assertIs(
+            type(getattr(b, "name")),
+            str,
+            msg="attribute value not properly casted",
+        )
+
+        HBNBCommand().onecmd(f"update BaseModel {b.id} age 47 this is extra")
+        self.assertIn("age", b.to_dict(), msg="attribute not found")
+        self.assertEqual(getattr(b, "age"), 47, msg="correct value not set")
+        self.assertIs(
+            type(getattr(b, "age")),
+            int,
+            msg="attribute value not properly casted",
+        )
+
+        HBNBCommand().onecmd(
+            f"update BaseModel {b.id} height 3.14 this is extra"
+        )
+        self.assertIn("height", b.to_dict(), msg="attribute not found")
+        self.assertEqual(
+            getattr(b, "height"), 3.14, msg="correct value not set"
+        )
+        self.assertIs(
+            type(getattr(b, "height")),
+            float,
+            msg="attribute value not properly casted",
+        )
+
+
 class TestHBNBCommandHelps(TestCase):
     """Tests for the helps sections of the console"""
 
@@ -265,7 +429,7 @@ class TestHBNBCommandHelps(TestCase):
         output_exp = """
 Documented commands (type help <topic>):
 ========================================
-EOF  all  create  destroy  help  quit  show
+EOF  all  create  destroy  help  quit  show  update
 
 """
         output_got = get_cmd_output("help")
@@ -332,4 +496,18 @@ EOF  all  create  destroy  help  quit  show
         output_got = get_cmd_output("help all")
         self.assertEqual(
             output_got, output_exp, msg="<help all> output is not correct"
+        )
+
+    def test_help_update(self):
+        output_exp = (
+            "Usage: update <class name> <id> <attribute name> <value>\n"
+            + "Updates an instance based on the class name and id by "
+            + "adding or updating an attribute.\n"
+            + "The change is saved to the JSON file."
+            + "The value is type casted when it is assigned and "
+            + "all extra arguments are ignored.\n"
+        )
+        output_got = get_cmd_output("help update")
+        self.assertEqual(
+            output_got, output_exp, msg="<help update> output is not correct"
         )
