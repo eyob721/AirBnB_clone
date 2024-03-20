@@ -407,3 +407,25 @@ EOF  all  create  destroy  help  quit  show  update
         )
         output_got = get_cmd_output("help update")
         self.assertEqual(output_got, output_exp)
+
+
+class HBNBCommandAllAdvanced(TestCase):
+    """Tests for <class name>.all() command"""
+
+    def test_all_invalid_class_name(self):
+        """<class name>.all() - invalid class name"""
+        output_exp = "** class doesn't exist **\n"
+        output_got = get_cmd_output("MyModel.all()")
+        self.assertEqual(output_got, output_exp)
+
+    def test_all_with_class_name(self):
+        """<class name>.all() - valid class name"""
+        for cls in valid_classes:
+            obj_list = [
+                str(obj)
+                for obj in storage.all().values()
+                if type(obj).__name__ == cls
+            ]
+            output_exp = str(obj_list) + "\n"
+            output_got = get_cmd_output(f"{cls}.all()")
+            self.assertEqual(output_got, output_exp)
