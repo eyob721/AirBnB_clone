@@ -1,10 +1,10 @@
 #!/user/bin/python3
-"""we implement city class that inherites from BaseModel"""
-import cmd
+"""City class"""
+
 from models.base_model import BaseModel
 
-class state(BaseModel):
-    """" Class definition of City class"""
+class City(BaseModel):
+    """"City class definition """
     
     state_id = ""
     name = ""
