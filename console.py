@@ -193,6 +193,17 @@ class HBNBCommand(cmd.Cmd):
         setattr(obj, tokens["attr"], tokens["value"])
         storage.save()
 
+    def precmd(self, line):
+        """Handle class defined commands (i.e. <class name>.cmd())"""
+        pattern = r"^(?P<class>\w+)\.(?P<cmd>\w+)\((?P<args>.*)\)"
+        match = re.search(pattern, line)
+        if match:
+            print("match ->")
+            match = match.groupdict()
+            for key in match:
+                print("{}: {}".format(key, match[key]))
+        return line
+
     # HELP handlers
 
     def help_quit(self):
