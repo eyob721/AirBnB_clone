@@ -493,3 +493,42 @@ class TestHBNBCommandShowAdvance(TestCase):
             output_exp = str(obj) + "\n"
             output_got = get_cmd_output(f"{cls}.show({obj.id}, extra, args)")
             self.assertEqual(output_got, output_exp)
+
+
+class TestHBNBCommandDestroyAdvance(TestCase):
+    """Tests for the <class name>.destroy() command"""
+
+    def test_destroy_invalid_class_name(self):
+        """<class name>.destroy() - invalid class name"""
+        output_exp = "** class doesn't exist **\n"
+        output_got = get_cmd_output("MyModel.destroy()")
+        self.assertEqual(output_got, output_exp)
+
+    def test_destroy_missing_id(self):
+        """<class name>.destroy() - missing id"""
+        output_exp = "** instance id missing **\n"
+        output_got = get_cmd_output("BaseModel.destroy()")
+        self.assertEqual(output_got, output_exp)
+
+    def test_destroy_missing_instance(self):
+        """<class name>.destroy() - invalid id"""
+        output_exp = "** no instance found **\n"
+        output_got = get_cmd_output("BaseModel.destroy(123)")
+        self.assertEqual(output_got, output_exp)
+
+    def test_destroy_correct_usage(self):
+        """<class name>.destroy() - valid class name and id"""
+        for cls in valid_classes:
+            obj = eval("{}()".format(cls))
+            key = f"{cls}.{obj.id}"
+            HBNBCommand().onecmd(f"{cls}.destroy({obj.id})")
+            self.assertNotIn(key, storage.all().keys())
+
+    def test_destroy_correct_usage_with_extra_arguments(self):
+        """<class name>.destroy() - valid class and id, but with extra args"""
+        # extra arguments should be ignored
+        for cls in valid_classes:
+            obj = eval("{}()".format(cls))
+            key = f"{cls}.{obj.id}"
+            HBNBCommand().onecmd(f"{cls}.destroy({obj.id}, extra, args)")
+            self.assertNotIn(key, storage.all().keys())
