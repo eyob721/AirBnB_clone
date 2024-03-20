@@ -8,6 +8,7 @@ from unittest.mock import patch
 from console import HBNBCommand
 from models import storage
 from models.base_model import BaseModel
+from models.user import User
 
 
 def get_cmd_output(command: str):
@@ -15,6 +16,9 @@ def get_cmd_output(command: str):
     with patch("sys.stdout", new=StringIO()) as output:
         HBNBCommand().onecmd(command)
         return output.getvalue()
+
+
+valid_classes = ("BaseModel", "User")
 
 
 class TestHBNBCommand(TestCase):
@@ -70,13 +74,12 @@ class TestHBNBCommandCreate(TestCase):
         """create - valid class name"""
         output_exp = r"^\w+-\w+-\w+-\w+-\w+$\n"
         # TODO: add more classes later on
-        valid_classes = ("BaseModel",)
-        for _class in valid_classes:
-            output_got = get_cmd_output(f"create {_class}")
+        for cls in valid_classes:
+            output_got = get_cmd_output(f"create {cls}")
             # Check id output
             self.assertRegex(output_got, output_exp)
             # Check that instance is actuall created
-            key = "{}.{}".format(_class, output_got.rstrip("\n"))
+            key = "{}.{}".format(cls, output_got.rstrip("\n"))
             self.assertIn(key, storage.all())
 
 
@@ -109,18 +112,20 @@ class TestHBNBCommandShow(TestCase):
 
     def test_show_correct_usage(self):
         """show - valid class name and id"""
-        b = BaseModel()
-        output_exp = str(b) + "\n"
-        output_got = get_cmd_output(f"show BaseModel {b.id}")
-        self.assertEqual(output_got, output_exp)
+        for cls in valid_classes:
+            obj = eval("{}()".format(cls))
+            output_exp = str(obj) + "\n"
+            output_got = get_cmd_output(f"show {cls} {obj.id}")
+            self.assertEqual(output_got, output_exp)
 
     def test_show_correct_usage_with_extra_arguments(self):
         """show - valid class name and id, but with extra arguments"""
         # extra arguments should be ignored
-        b = BaseModel()
-        output_exp = str(b) + "\n"
-        output_got = get_cmd_output(f"show BaseModel {b.id}")
-        self.assertEqual(output_got, output_exp)
+        for cls in valid_classes:
+            obj = eval("{}()".format(cls))
+            output_exp = str(obj) + "\n"
+            output_got = get_cmd_output(f"show {cls} {obj.id} extra args")
+            self.assertEqual(output_got, output_exp)
 
 
 class HBNBCommandDestroy(TestCase):
@@ -152,18 +157,20 @@ class HBNBCommandDestroy(TestCase):
 
     def test_destroy_correct_usage(self):
         """destroy - valid class name and id"""
-        b = BaseModel()
-        key = f"BaseModel.{b.id}"
-        HBNBCommand().onecmd(f"destroy BaseModel {b.id}")
-        self.assertNotIn(key, storage.all().keys())
+        for cls in valid_classes:
+            obj = eval("{}()".format(cls))
+            key = f"{cls}.{obj.id}"
+            HBNBCommand().onecmd(f"destroy {cls} {obj.id}")
+            self.assertNotIn(key, storage.all().keys())
 
     def test_destroy_correct_usage_with_extra_arguments(self):
         """destroy - valid class name and id, but with extra arguments"""
         # extra arguments should be ignored
-        b = BaseModel()
-        key = f"BaseModel.{b.id}"
-        HBNBCommand().onecmd(f"destroy BaseModel {b.id} hello from Alx")
-        self.assertNotIn(key, storage.all().keys())
+        for cls in valid_classes:
+            obj = eval("{}()".format(cls))
+            key = f"{cls}.{obj.id}"
+            HBNBCommand().onecmd(f"destroy {cls} {obj.id} extra args")
+            self.assertNotIn(key, storage.all().keys())
 
 
 class HBNBCommandAll(TestCase):
@@ -184,7 +191,6 @@ class HBNBCommandAll(TestCase):
 
     def test_all_with_class_name(self):
         """all - valid class name"""
-        valid_classes = ("BaseModel",)
         for cls in valid_classes:
             obj_list = [
                 str(obj)
@@ -239,62 +245,72 @@ class TestHBNBCommandUpdate(TestCase):
 
     def test_update_correct_usages(self):
         """update - valid class, id, attribute and value"""
-        b = BaseModel()
+        for cls in valid_classes:
+            obj = eval("{}()".format(cls))
 
-        cases = {
-            "name": '"John Doe"',
-            "gender": "M",
-            "age": 47,
-            "height": 1.82,
-            "email": '"john@gmail.com"',
-        }
+            cases = {
+                "name": '"John Doe"',
+                "gender": "M",
+                "age": 47,
+                "height": 1.82,
+                "email": '"john@gmail.com"',
+            }
 
-        for attr in cases.keys():
-            HBNBCommand().onecmd(
-                "update BaseModel {} {} {}".format(b.id, attr, cases[attr])
-            )
-            # Check that attribute is set
-            self.assertIn(attr, b.to_dict())
-            if type(cases[attr]) is str:
-                self.assertEqual(getattr(b, attr), cases[attr].strip("\"'"))
-            else:
-                self.assertEqual(getattr(b, attr), cases[attr])
-            # Check that attribute value is properly casted
-            self.assertIs(type(getattr(b, attr)), type(cases[attr]))
+            for attr in cases.keys():
+                HBNBCommand().onecmd(
+                    "update {} {} {} {}".format(cls, obj.id, attr, cases[attr])
+                )
+                # Check that attribute is set
+                self.assertIn(attr, obj.to_dict())
+                if type(cases[attr]) is str:
+                    self.assertEqual(
+                        getattr(obj, attr), cases[attr].strip("\"'")
+                    )
+                else:
+                    self.assertEqual(getattr(obj, attr), cases[attr])
+                # Check that attribute value is properly casted
+                self.assertIs(type(getattr(obj, attr)), type(cases[attr]))
 
-        # Check that it is saved
-        storage.reload()
-        key = f"BaseModel.{b.id}"
-        obj = storage.all()[key]
-        obj_dict = obj.to_dict()
+            # Check that it is saved
+            storage.reload()
+            key = f"{cls}.{obj.id}"
+            obj = storage.all()[key]
+            obj_dict = obj.to_dict()
 
-        for attr in cases:
-            self.assertIn(attr, obj_dict)
-            if type(cases[attr]) is str:
-                self.assertEqual(getattr(obj, attr), cases[attr].strip("\"'"))
-            else:
-                self.assertEqual(getattr(obj, attr), cases[attr])
-            # Check that attribute value is properly casted
-            self.assertIs(type(getattr(obj, attr)), type(cases[attr]))
+            for attr in cases:
+                self.assertIn(attr, obj_dict)
+                if type(cases[attr]) is str:
+                    self.assertEqual(
+                        getattr(obj, attr), cases[attr].strip("\"'")
+                    )
+                else:
+                    self.assertEqual(getattr(obj, attr), cases[attr])
+                # Check that attribute value is properly casted
+                self.assertIs(type(getattr(obj, attr)), type(cases[attr]))
 
     def test_update_correct_usage_with_extra_args(self):
         """update - valid class, id, attribute and value but with extra args"""
-        b = BaseModel()
+        for cls in valid_classes:
+            obj = eval("{}()".format(cls))
 
-        HBNBCommand().onecmd(f"update BaseModel {b.id} name 'John Doe' extra ")
-        self.assertIn("name", b.to_dict())
-        self.assertEqual(getattr(b, "name"), "John Doe")
-        self.assertIs(type(getattr(b, "name")), str)
+            HBNBCommand().onecmd(
+                f"update {cls} {obj.id} name 'John Doe' this is extra "
+            )
+            self.assertIn("name", obj.to_dict())
+            self.assertEqual(getattr(obj, "name"), "John Doe")
+            self.assertIs(type(getattr(obj, "name")), str)
 
-        HBNBCommand().onecmd(f"update BaseModel {b.id} age 47 this is extra")
-        self.assertIn("age", b.to_dict())
-        self.assertEqual(getattr(b, "age"), 47)
-        self.assertIs(type(getattr(b, "age")), int)
+            HBNBCommand().onecmd(f"update {cls} {obj.id} age 47 this is extra")
+            self.assertIn("age", obj.to_dict())
+            self.assertEqual(getattr(obj, "age"), 47)
+            self.assertIs(type(getattr(obj, "age")), int)
 
-        HBNBCommand().onecmd(f"update BaseModel {b.id} height 3.14 extra arg")
-        self.assertIn("height", b.to_dict())
-        self.assertEqual(getattr(b, "height"), 3.14)
-        self.assertIs(type(getattr(b, "height")), float)
+            HBNBCommand().onecmd(
+                f"update {cls} {obj.id} height 3.14 this is extra"
+            )
+            self.assertIn("height", obj.to_dict())
+            self.assertEqual(getattr(obj, "height"), 3.14)
+            self.assertIs(type(getattr(obj, "height")), float)
 
 
 class TestHBNBCommandHelps(TestCase):
