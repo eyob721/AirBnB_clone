@@ -152,10 +152,10 @@ class HBNBCommand(cmd.Cmd):
             r"^(?P<class>\w+)?\ ?"
             + r"(?P<id>[\"\'][\w\-]*[\"\']|[\w\-]*)?\ ?"
             + r"(?P<attr>[\"\'][\w]*[\"\']|[\w]*)?\ ?"
-            + r"(?P<value>[\"\'].*[\'\"]|[\w!#$%&()*+.:;<=>?@\\^`{|}~-]*)?\ ?"
+            + r"(?P<value>[\"\'].*[\'\"]|[\w@.-]*)?\ ?"
             + r"(?P<extra>.*)$"
         )
-        tokens = re.search(pattern, args).groupdict()  # type: ignore
+        tokens = re.search(pattern, args).groupdict()  # pyright: ignore
 
         # Strip quotations
         for key in tokens:
@@ -206,53 +206,54 @@ class HBNBCommand(cmd.Cmd):
         args_pattern = (
             r"^(?P<id>[\"\'][\w\-]*[\"\']|[\w\-]*)?,?\ ?"
             + r"(?P<attr>[\"\'][\w]*[\"\']|[\w]*)?,?\ ?"
-            + r"(?P<value>[\"\'].*[\"\']|[\w!#$%&()*+.:;<=>?@\\^`{|}~-]*)?"
+            + r"(?P<value>[\"\'].*[\"\']|[\w@.-]*)?"
             + r"(?P<extra>.*)$"
         )
 
         line_match = re.search(line_pattern, line)
+        if not line_match:
+            return line
 
-        if line_match:
-            line_tokens = line_match.groupdict()
+        line_tokens = line_match.groupdict()
 
-            if line_tokens["cmd"] == "count":
-                count = [
-                    type(obj).__name__ for obj in storage.all().values()
-                ].count(line_tokens["class"])
-                print(count)
-                return ""
+        # <class name>.count()
+        if line_tokens["cmd"] == "count":
+            count = [
+                type(obj).__name__ for obj in storage.all().values()
+            ].count(line_tokens["class"])
+            print(count)
+            return ""
 
-            args = re.search(args_pattern, line_tokens["args"])
+        args_match = re.search(args_pattern, line_tokens["args"])
+        args_tokens = args_match.groupdict()  # pyright: ignore
 
-            if args:
-                args = args.groupdict()
+        # <class name>.update(<id>, <dict>)
+        try:
+            upd_dict = json.loads(str(args_tokens["extra"]).replace("'", '"'))
+        except Exception:
+            upd_dict = None
 
-                try:
-                    upd_dict = json.loads(str(args["extra"]).replace("'", '"'))
-                except Exception:
-                    upd_dict = None
-
-                if line_tokens["cmd"] == "update" and type(upd_dict) is dict:
-                    for attr in upd_dict:
-                        self.do_update(
-                            "{} {} {} {}".format(
-                                line_tokens["class"],
-                                args["id"],
-                                attr,
-                                upd_dict[attr],
-                            )
-                        )
-                    return ""
-
-                return "{} {} {} {} {} {}".format(
-                    line_tokens["cmd"],
-                    line_tokens["class"],
-                    args["id"],
-                    args["attr"],
-                    args["value"],
-                    args["extra"],
+        if line_tokens["cmd"] == "update" and type(upd_dict) is dict:
+            for attr in upd_dict:
+                self.do_update(
+                    "{} {} {} '{}'".format(
+                        line_tokens["class"],
+                        args_tokens["id"],
+                        attr,
+                        str(upd_dict[attr]),
+                    )
                 )
-        return line
+            return ""
+
+        # <class name>.cmd() -> cmds: all, show, destroy, update (without dict)
+        return "{} {} {} {} {} {}".format(
+            line_tokens["cmd"],
+            line_tokens["class"],
+            args_tokens["id"],
+            args_tokens["attr"],
+            args_tokens["value"],
+            args_tokens["extra"],
+        )
 
     def onecmd(self, line):
         """Override onecmd to call precmd before executing a command"""

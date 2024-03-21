@@ -641,3 +641,56 @@ class TestHBNBCommandUpdateAdvanced(TestCase):
             self.assertIn("height", obj.to_dict())
             self.assertEqual(getattr(obj, "height"), 3.14)
             self.assertIs(type(getattr(obj, "height")), float)
+
+
+class TestHBNBCommandUpdateAdvancedDictionary(TestCase):
+    """Tests for the <class name>.update(<id>, <dict>) command"""
+
+    test_dict = {
+        "full_name": "John Doe",
+        "age": 29,
+        "height": 1.78,
+        "email": "airbnb@mail.com",
+    }
+
+    def test_update_invalid_class_name(self):
+        """<class name>.update(<id>, <dict>) - invalid class name"""
+        output_exp = "** class doesn't exist **\n" * len(self.test_dict)
+        output_got = get_cmd_output(f"MyModel.update({self.test_dict})")
+        self.assertEqual(output_got, output_exp)
+
+    def test_update_missing_id(self):
+        """<class name>.update(<id>, <dict>) - missing id"""
+        output_exp = "** instance id missing **\n" * len(self.test_dict)
+        output_got = get_cmd_output(f"BaseModel.update({self.test_dict})")
+        self.assertEqual(output_got, output_exp)
+
+    def test_update_missing_instance(self):
+        """<class name>.update(<id>, <dict>) - invalid id"""
+        output_exp = "** no instance found **\n" * len(self.test_dict)
+        output_got = get_cmd_output(f"BaseModel.update(123, {self.test_dict})")
+        self.assertEqual(output_got, output_exp)
+
+    def test_update_correct_usages(self):
+        """<class name>.update(<id>, <dict>) - valid class, id, and dict"""
+        for cls in valid_classes:
+            obj = eval("{}()".format(cls))
+
+            HBNBCommand().onecmd(f"{cls}.update({obj.id}, {self.test_dict})")
+
+            for attr in self.test_dict:
+                # Check that attribute is set
+                self.assertIn(attr, obj.to_dict())
+
+                # Check value is properly assigned
+                if type(self.test_dict[attr]) is str:
+                    self.assertEqual(
+                        getattr(obj, attr), self.test_dict[attr].strip("\"'")
+                    )
+                else:
+                    self.assertEqual(getattr(obj, attr), self.test_dict[attr])
+
+                # Check that attribute value is properly casted
+                self.assertIs(
+                    type(getattr(obj, attr)), type(self.test_dict[attr])
+                )
