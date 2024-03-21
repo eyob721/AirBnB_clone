@@ -457,28 +457,28 @@ class HBNBCommandCountAdvanced(TestCase):
 
 
 class TestHBNBCommandShowAdvance(TestCase):
-    """Tests for the <class name>.show() command"""
+    """Tests for the <class name>.show(<id>) command"""
 
     def test_show_invalid_class_name(self):
-        """<class name>.show() - invalid class name"""
+        """<class name>.show(<id>) - invalid class name"""
         output_exp = "** class doesn't exist **\n"
         output_got = get_cmd_output("MyModel.show()")
         self.assertEqual(output_got, output_exp)
 
     def test_show_missing_id(self):
-        """<class name>.show() - missing id"""
+        """<class name>.show(<id>) - missing id"""
         output_exp = "** instance id missing **\n"
         output_got = get_cmd_output("BaseModel.show()")
         self.assertEqual(output_got, output_exp)
 
     def test_show_missing_instance(self):
-        """<class name>.show() - invalid id"""
+        """<class name>.show(<id>) - invalid id"""
         output_exp = "** no instance found **\n"
         output_got = get_cmd_output("BaseModel.show(123)")
         self.assertEqual(output_got, output_exp)
 
     def test_show_correct_usage(self):
-        """<class name>.show() - valid class name and id"""
+        """<class name>.show(<id>) - valid class name and id"""
         for cls in valid_classes:
             obj = eval("{}()".format(cls))
             output_exp = str(obj) + "\n"
@@ -486,7 +486,7 @@ class TestHBNBCommandShowAdvance(TestCase):
             self.assertEqual(output_got, output_exp)
 
     def test_show_correct_usage_with_extra_arguments(self):
-        """<class name>.show() - valid class and id, but with extra args"""
+        """<class name>.show(<id>) - valid class and id, but with extra args"""
         # extra arguments should be ignored
         for cls in valid_classes:
             obj = eval("{}()".format(cls))
@@ -496,28 +496,28 @@ class TestHBNBCommandShowAdvance(TestCase):
 
 
 class TestHBNBCommandDestroyAdvance(TestCase):
-    """Tests for the <class name>.destroy() command"""
+    """Tests for the <class name>.destroy(<id>) command"""
 
     def test_destroy_invalid_class_name(self):
-        """<class name>.destroy() - invalid class name"""
+        """<class name>.destroy(<id>) - invalid class name"""
         output_exp = "** class doesn't exist **\n"
         output_got = get_cmd_output("MyModel.destroy()")
         self.assertEqual(output_got, output_exp)
 
     def test_destroy_missing_id(self):
-        """<class name>.destroy() - missing id"""
+        """<class name>.destroy(<id>) - missing id"""
         output_exp = "** instance id missing **\n"
         output_got = get_cmd_output("BaseModel.destroy()")
         self.assertEqual(output_got, output_exp)
 
     def test_destroy_missing_instance(self):
-        """<class name>.destroy() - invalid id"""
+        """<class name>.destroy(<id>) - invalid id"""
         output_exp = "** no instance found **\n"
         output_got = get_cmd_output("BaseModel.destroy(123)")
         self.assertEqual(output_got, output_exp)
 
     def test_destroy_correct_usage(self):
-        """<class name>.destroy() - valid class name and id"""
+        """<class name>.destroy(<id>) - valid class name and id"""
         for cls in valid_classes:
             obj = eval("{}()".format(cls))
             key = f"{cls}.{obj.id}"
@@ -525,7 +525,7 @@ class TestHBNBCommandDestroyAdvance(TestCase):
             self.assertNotIn(key, storage.all().keys())
 
     def test_destroy_correct_usage_with_extra_arguments(self):
-        """<class name>.destroy() - valid class and id, but with extra args"""
+        """<class name>.destroy(<id>) - valid class and id, with extra args"""
         # extra arguments should be ignored
         for cls in valid_classes:
             obj = eval("{}()".format(cls))
@@ -535,42 +535,42 @@ class TestHBNBCommandDestroyAdvance(TestCase):
 
 
 class TestHBNBCommandUpdateAdvanced(TestCase):
-    """Tests for the <class name>.update() command"""
+    """Tests for the <class name>.update(<id>, <attr>, <value>) command"""
 
     def test_update_invalid_class_name(self):
-        """<class name>.update() - invalid class name"""
+        """<class name>.update(<id>, <attr>, <value>) - invalid class name"""
         output_exp = "** class doesn't exist **\n"
         output_got = get_cmd_output("MyModel.update()")
         self.assertEqual(output_got, output_exp)
 
     def test_update_missing_id(self):
-        """<class name>.update() - missing id"""
+        """<class name>.update(<id>, <attr>, <value>) - missing id"""
         output_exp = "** instance id missing **\n"
         output_got = get_cmd_output("BaseModel.update()")
         self.assertEqual(output_got, output_exp)
 
     def test_update_missing_instance(self):
-        """<class name>.update() - invalid id"""
+        """<class name>.update(<id>, <attr>, <value>) - invalid id"""
         output_exp = "** no instance found **\n"
         output_got = get_cmd_output("BaseModel.update(123)")
         self.assertEqual(output_got, output_exp)
 
     def test_update_missing_attribute(self):
-        """<class name>.update() - missing attribute name"""
+        """<class name>.update(<id>, <attr>, <value>) - missing attribute"""
         b = BaseModel()
         output_exp = "** attribute name missing **\n"
         output_got = get_cmd_output(f"BaseModel.update({b.id})")
         self.assertEqual(output_got, output_exp)
 
     def test_update_missing_value(self):
-        """<class name>.update() - missing value"""
+        """<class name>.update(<id>, <attr>, <value>) - missing value"""
         b = BaseModel()
         output_exp = "** value missing **\n"
         output_got = get_cmd_output(f"BaseModel.update({b.id}, eg)")
         self.assertEqual(output_got, output_exp)
 
     def test_update_correct_usages(self):
-        """<class name>.update() - valid class, id, attribute and value"""
+        """<class name>.update(<id>, <attr>, <value>) - valid args"""
         for cls in valid_classes:
             obj = eval("{}()".format(cls))
 
@@ -617,7 +617,7 @@ class TestHBNBCommandUpdateAdvanced(TestCase):
                 self.assertIs(type(getattr(obj, attr)), type(cases[attr]))
 
     def test_update_correct_usage_with_extra_args(self):
-        """<class name>.update() - valid args but with extra args"""
+        """<class name>.update(<id>, <attr>, <value>) - with extra args"""
         for cls in valid_classes:
             obj = eval("{}()".format(cls))
 

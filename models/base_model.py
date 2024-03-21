@@ -12,7 +12,14 @@ import models
 
 
 class BaseModel:
-    """BaseModel class definition"""
+    """BaseModel class definition
+
+    Attributes:
+        id (str): uuid of an instance
+        created_at (datetime): date and time when an instance is created
+        updated_at (datetime): date and time when an instance is updated
+
+    """
 
     def __init__(self, *args, **kwargs):
         """BaseModel class constructor"""
@@ -21,12 +28,13 @@ class BaseModel:
                 if key in ["created_at", "updated_at"]:
                     setattr(self, key, datetime.fromisoformat(kwargs[key]))
                     continue
-                if key != "__class__":  # class name shouldn't be changed
+                elif key != "__class__":  # class name shouldn't be changed
                     setattr(self, key, kwargs[key])
-        else:
-            self.id = str(uuid.uuid4())
-            self.created_at = self.updated_at = datetime.now()
-            models.storage.new(self)
+            return
+        self.id = str(uuid.uuid4())
+        self.created_at = self.updated_at = datetime.now()
+        # Add new instances to the storage dictionary of objects
+        models.storage.new(self)
 
     def __str__(self):
         """String representation of the instance"""
@@ -35,6 +43,7 @@ class BaseModel:
     def save(self):
         """Saves the instance"""
         self.updated_at = datetime.now()
+        # Save storage dictionary of objects to the JSON file
         models.storage.save()
 
     def to_dict(self):

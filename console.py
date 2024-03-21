@@ -51,16 +51,13 @@ class HBNBCommand(cmd.Cmd):
         """Handler for the create command"""
         pattern = r"^(?P<class>\w+)?\ ?" + r"(?P<extra>.*)$"
         tokens = re.search(pattern, args).groupdict()  # type: ignore
-
         if not tokens["class"]:
             print("** class name missing **")
             return
-
         if tokens["class"] not in self.__valid_classes:
             print("** class doesn't exist **")
             return
 
-        # Class exists, create an instance
         obj = eval("{}()".format(tokens["class"]))
         storage.save()
         print(obj.id)
@@ -73,25 +70,20 @@ class HBNBCommand(cmd.Cmd):
             + r"(?P<extra>.*)$"
         )
         tokens = re.search(pattern, args).groupdict()  # type: ignore
-
         if not tokens["class"]:
             print("** class name missing **")
             return
-
         if tokens["class"] not in self.__valid_classes:
             print("** class doesn't exist **")
             return
-
         if not tokens["id"]:
             print("** instance id missing **")
             return
-
         key = "{}.{}".format(tokens["class"], tokens["id"])
         if key not in storage.all():
             print("** no instance found **")
             return
 
-        # If instance exists, print it's string representation
         obj = storage.all()[key]
         print(obj)
 
@@ -103,25 +95,20 @@ class HBNBCommand(cmd.Cmd):
             + r"(?P<extra>.*)$"
         )
         tokens = re.search(pattern, args).groupdict()  # type: ignore
-
         if not tokens["class"]:
             print("** class name missing **")
             return
-
         if tokens["class"] not in self.__valid_classes:
             print("** class doesn't exist **")
             return
-
         if not tokens["id"]:
             print("** instance id missing **")
             return
-
         key = "{}.{}".format(tokens["class"], tokens["id"])
         if key not in storage.all():
             print("** no instance found **")
             return
 
-        # If instance exists, destroy it
         del storage.all()[key]
         storage.save()
 
@@ -129,12 +116,10 @@ class HBNBCommand(cmd.Cmd):
         """Handler for all command"""
         pattern = r"^(?P<class>\w+)?\ ?" + r"(?P<extra>.*)$"
         tokens = re.search(pattern, args).groupdict()  # type: ignore
-
         if not tokens["class"]:
             obj_list = [str(obj) for obj in storage.all().values()]
             print(obj_list)
             return
-
         if tokens["class"] not in self.__valid_classes:
             print("** class doesn't exist **")
             return
@@ -165,29 +150,24 @@ class HBNBCommand(cmd.Cmd):
         if not tokens["class"]:
             print("** class name missing **")
             return
-
         if tokens["class"] not in self.__valid_classes:
             print("** class doesn't exist **")
             return
-
         if not tokens["id"]:
             print("** instance id missing **")
             return
-
         key = "{}.{}".format(tokens["class"], tokens["id"])
         if key not in storage.all():
             print("** no instance found **")
             return
-
         if not tokens["attr"]:
             print("** attribute name missing **")
             return
-
         if not tokens["value"]:
             print("** value missing **")
             return
 
-        # Cast the attibute value to the attribute type
+        # cast the attibute value to the attribute type
         if tokens["value"].lstrip("-").isdigit():
             tokens["value"] = int(tokens["value"])
         elif tokens["value"].lstrip("-").replace(".", "").isnumeric():
@@ -201,7 +181,6 @@ class HBNBCommand(cmd.Cmd):
 
     def precmd(self, line):
         """Override precmd to handle commands like <class name>.cmd()"""
-
         line_pattern = r"^(?P<class>\w+)\.(?P<cmd>\w+)\((?P<args>.*)\)$"
         args_pattern = (
             r"^(?P<id>[\"\'][\w\-]*[\"\']|[\w\-]*)?,?\ ?"
@@ -209,7 +188,6 @@ class HBNBCommand(cmd.Cmd):
             + r"(?P<value>[\"\'].*[\"\']|[\w@.-]*)?"
             + r"(?P<extra>.*)$"
         )
-
         line_match = re.search(line_pattern, line)
         if not line_match:
             return line
