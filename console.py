@@ -5,6 +5,7 @@ This is the entry point of the command interpreter
 
 """
 import cmd
+import json
 import re
 
 from models import storage
@@ -156,6 +157,11 @@ class HBNBCommand(cmd.Cmd):
         )
         tokens = re.search(pattern, args).groupdict()  # type: ignore
 
+        # Strip quotations
+        for key in tokens:
+            if type(tokens[key]) is str:
+                tokens[key] = tokens[key].strip("\"'")
+
         if not tokens["class"]:
             print("** class name missing **")
             return
@@ -187,7 +193,7 @@ class HBNBCommand(cmd.Cmd):
         elif tokens["value"].lstrip("-").replace(".", "").isnumeric():
             tokens["value"] = float(tokens["value"])
         else:
-            tokens["value"] = tokens["value"].strip("\"'")
+            tokens["value"] = str(tokens["value"])
 
         obj = storage.all()[key]
         setattr(obj, tokens["attr"], tokens["value"])
