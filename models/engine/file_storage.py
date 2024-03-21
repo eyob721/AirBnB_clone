@@ -19,20 +19,20 @@ from models.user import User
 class FileStorage:
     """FileStorage class definition"""
 
-    __file_path = "file.json"
+    __file_path = "hbnb.json"
     __objects = {}
 
     def all(self):
-        """Returns the dictionary __objects"""
+        """Returns the dictionary of objects"""
         return FileStorage.__objects
 
     def new(self, obj):
-        """Sets in __objects the obj with key <obj class name>.id"""
+        """Add `obj` to the dictionary of objects with key <class name>.id"""
         key = f"{type(obj).__name__}.{obj.id}"
         FileStorage.__objects[key] = obj
 
     def save(self):
-        """Serialize __objects to json file"""
+        """Serializes the dictionary of objects to a JSON file"""
         obj_dict = {
             key: obj.to_dict() for key, obj in FileStorage.__objects.items()
         }
@@ -41,10 +41,9 @@ class FileStorage:
             file.write("\n")
 
     def reload(self):
-        """Deserializes the json file to __objects"""
+        """Deserializes the JSON file to a dictionary of objects"""
         try:
             with open(FileStorage.__file_path, "r") as file:
-                # TODO: handle empty file
                 obj_dict = json.load(file)
         except FileNotFoundError:
             pass

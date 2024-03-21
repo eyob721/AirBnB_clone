@@ -5,6 +5,11 @@ from models.base_model import BaseModel
 
 
 class State(BaseModel):
-    """State class definition"""
+    """State class definition
+
+    Attibutes:
+        name (str): name of the state
+
+    """
 
     name = ""
