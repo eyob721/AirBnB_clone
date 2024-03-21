@@ -150,9 +150,9 @@ class HBNBCommand(cmd.Cmd):
         """Handler for the update command"""
         pattern = (
             r"^(?P<class>\w+)?\ ?"
-            + r"(?P<id>[a-zA-Z0-9\-]+)?\ ?"
-            + r"(?P<attr>[\"\'][a-zA-Z0-9_]+[\"\']|[a-zA-Z0-9_]+)?\ ?"
-            + r"(?P<value>[\"\'].*[\'\"]|[\w\-\.]+)?\ ?"
+            + r"(?P<id>[\"\'][\w\-]*[\"\']|[\w\-]*)?\ ?"
+            + r"(?P<attr>[\"\'][\w]*[\"\']|[\w]*)?\ ?"
+            + r"(?P<value>[\"\'].*[\'\"]|[\w!#$%&()*+.:;<=>?@\\^`{|}~-]*)?\ ?"
             + r"(?P<extra>.*)$"
         )
         tokens = re.search(pattern, args).groupdict()  # type: ignore
@@ -201,8 +201,17 @@ class HBNBCommand(cmd.Cmd):
 
     def precmd(self, line):
         """Override precmd to handle commands like <class name>.cmd()"""
+
         line_pattern = r"^(?P<class>\w+)\.(?P<cmd>\w+)\((?P<args>.*)\)$"
+        args_pattern = (
+            r"^(?P<id>[\"\'][\w\-]*[\"\']|[\w\-]*)?,?\ ?"
+            + r"(?P<attr>[\"\'][\w]*[\"\']|[\w]*)?,?\ ?"
+            + r"(?P<value>[\"\'].*[\"\']|[\w!#$%&()*+.:;<=>?@\\^`{|}~-]*)?"
+            + r"(?P<extra>.*)$"
+        )
+
         line_match = re.search(line_pattern, line)
+
         if line_match:
             line_tokens = line_match.groupdict()
 
@@ -213,20 +222,27 @@ class HBNBCommand(cmd.Cmd):
                 print(count)
                 return ""
 
-            args_pattern = (
-                r"^(?P<id>[\"\'][\w\-]*[\"\']|[\w\-]*)?,?\ ?"
-                + r"(?P<attr>[\"\'][\w_]+[\"\']|[\w_]+)?,?\ ?"
-                + r"(?P<value>[\"\'][\w\@\-\_\. ]*[\"\']|[\w\@\-\_\.]*)?"
-                + r"(?P<extra>.*)$"
-            )
             args = re.search(args_pattern, line_tokens["args"])
 
             if args:
                 args = args.groupdict()
-                args["id"] = args["id"].strip("'\"") if args["id"] else ""
-                args["attr"] = (
-                    args["attr"].strip("\"'") if args["attr"] else ""
-                )
+
+                try:
+                    upd_dict = json.loads(str(args["extra"]).replace("'", '"'))
+                except Exception:
+                    upd_dict = None
+
+                if line_tokens["cmd"] == "update" and type(upd_dict) is dict:
+                    for attr in upd_dict:
+                        self.do_update(
+                            "{} {} {} {}".format(
+                                line_tokens["class"],
+                                args["id"],
+                                attr,
+                                upd_dict[attr],
+                            )
+                        )
+                    return ""
 
                 return "{} {} {} {} {} {}".format(
                     line_tokens["cmd"],
