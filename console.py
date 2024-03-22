@@ -116,20 +116,20 @@ class HBNBCommand(cmd.Cmd):
         """Handler for all command"""
         pattern = r"^(?P<class>\w+)?\ ?" + r"(?P<extra>.*)$"
         tokens = re.search(pattern, args).groupdict()  # type: ignore
-        if not tokens["class"]:
-            obj_list = [str(obj) for obj in storage.all().values()]
-            print(obj_list)
-            return
-        if tokens["class"] not in self.__valid_classes:
+
+        if tokens["class"] and tokens["class"] not in self.__valid_classes:
             print("** class doesn't exist **")
             return
 
-        obj_list = [
+        # build the list containig the string representation of the objects
+        obj_str_list = [
             str(obj)
             for obj in storage.all().values()
-            if type(obj).__name__ == tokens["class"]
+            if not tokens["class"] or type(obj).__name__ == tokens["class"]
         ]
-        print(obj_list)
+
+        if obj_str_list != []:
+            print(obj_str_list)
 
     def do_update(self, args):
         """Handler for the update command"""
