@@ -94,7 +94,7 @@ In the development of the console some assumptions and rules were given such as:
 
 To start using the console run `./console.py`. Here is a preview of the console.
 
-![console_preview](./assets/console_preview.gif)
+![console_readme_preview](./assets/console_readme_preview.gif)
 
 ## Extra Commands
 
