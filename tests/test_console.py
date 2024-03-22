@@ -198,7 +198,7 @@ class HBNBCommandAll(TestCase):
     def test_all_without_class_name(self):
         """all - no class name"""
         obj_list = [str(obj) for obj in storage.all().values()]
-        output_exp = str(obj_list) + "\n"
+        output_exp = "" if obj_list == [] else str(obj_list) + "\n"
         output_got = get_cmd_output("all")
         self.assertEqual(output_got, output_exp)
 
@@ -210,7 +210,7 @@ class HBNBCommandAll(TestCase):
                 for obj in storage.all().values()
                 if type(obj).__name__ == cls
             ]
-            output_exp = str(obj_list) + "\n"
+            output_exp = "" if obj_list == [] else str(obj_list) + "\n"
             output_got = get_cmd_output(f"all {cls}")
             self.assertEqual(output_got, output_exp)
 
@@ -426,7 +426,7 @@ class HBNBCommandAllAdvanced(TestCase):
                 for obj in storage.all().values()
                 if type(obj).__name__ == cls
             ]
-            output_exp = str(obj_list) + "\n"
+            output_exp = "" if obj_list == [] else str(obj_list) + "\n"
             output_got = get_cmd_output(f"{cls}.all()")
             self.assertEqual(output_got, output_exp)
 
