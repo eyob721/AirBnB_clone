@@ -43,7 +43,8 @@ this storage engine
 
 ## Features
 
-The console supports the following commands:
+The console is built using the `cmd` python module. It supports the following
+commands:
 
 - `create`
   - usage: `create <class name>`
@@ -98,9 +99,11 @@ To start using the console run `./console.py`. Here is a preview of the console.
 
 ## Extra Commands
 
-In addition to the commands above we also added some additional commands as a
-challenge. These commands are similar to the commands above but with a
-different syntax.
+In addition we were also given advanced tasks to implement the commands above
+again but in different syntax. This commands are handled by overriding the
+`cmd.precmd(line)` method of the `cmd` module.
+
+The commands are:
 
 - `<class name>.all()`
   - same as `all <class name>`
