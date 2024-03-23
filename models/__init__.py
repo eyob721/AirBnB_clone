@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Initialises the file storage for the console"""
+"""Initialization file for the models package"""
 from models.engine.file_storage import FileStorage
 
 storage = FileStorage()
