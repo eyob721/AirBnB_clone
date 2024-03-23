@@ -22,7 +22,13 @@ class BaseModel:
     """
 
     def __init__(self, *args, **kwargs):
-        """BaseModel class constructor"""
+        """BaseModel class constructor
+
+        Args:
+            *args (tuple): variable number of positional arguments
+            **kwargs (dict): variable number of keyword arguments
+
+        """
         if kwargs:
             for key in kwargs:
                 if key in ["created_at", "updated_at"]:
@@ -30,11 +36,11 @@ class BaseModel:
                     continue
                 elif key != "__class__":  # class name shouldn't be changed
                     setattr(self, key, kwargs[key])
-            return
-        self.id = str(uuid.uuid4())
-        self.created_at = self.updated_at = datetime.now()
-        # Add new instances to the storage dictionary of objects
-        models.storage.new(self)
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = self.updated_at = datetime.now()
+            # Add new instances to the storage dictionary of objects
+            models.storage.new(self)
 
     def __str__(self):
         """String representation of the instance"""

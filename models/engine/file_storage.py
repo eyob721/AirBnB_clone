@@ -17,7 +17,7 @@ from models.user import User
 
 
 class FileStorage:
-    """FileStorage class definition"""
+    """This class saves and manages the data using a JSON file"""
 
     __file_path = "hbnb.json"
     __objects = {}
