@@ -90,27 +90,56 @@ class TestFileStorageMethods(TestCase):
         for method in valid_methods:
             self.assertTrue(method in dir(FileStorage))
 
-    def test_save_and_reload(self):
-        """Check that the save and reload methods work correctly"""
+    def test_save_method(self):
+        """Check that the save method work correctly"""
         f = FileStorage()
         __file_path = getattr(f, "_FileStorage__file_path")
+        __objects = getattr(f, "_FileStorage__objects")
+
+        obj_dict = {key: obj.to_dict() for key, obj in __objects.items()}
 
         f.save()
-        __objects = getattr(f, "_FileStorage__objects")
-        obj_dict_before = {
-            key: obj.to_dict() for key, obj in __objects.items()
-        }
 
         # Check that the file is created
         if not os.path.exists(__file_path):
             raise AssertionError("JSON file not found")
 
-        f.reload()
-        __objects = getattr(f, "_FileStorage__objects")
-        obj_dict_after = {key: obj.to_dict() for key, obj in __objects.items()}
+        # Check that the JSON file is saved correctly
+        with open(__file_path, "r") as file:
+            json_obj_dict = json.load(file)
+        self.assertEqual(obj_dict, json_obj_dict)
 
-        # Check what got out is the same as what got in
-        self.assertEqual(obj_dict_before, obj_dict_after)
+    def test_reload_method(self):
+        """Check that the reload method works correctly"""
+        f = FileStorage()
+        __file_path = getattr(FileStorage, "_FileStorage__file_path")
+        __objects = getattr(FileStorage, "_FileStorage__objects")
+
+        # Check when the file doesn't exist (__objects must not be changed)
+        obj_dict_before_reload = {
+            key: obj.to_dict() for key, obj in f.all().items()
+        }
+        remove_file(__file_path)
+        f.reload()
+        obj_dict_after_reload = {
+            key: obj.to_dict() for key, obj in f.all().items()
+        }
+        self.assertEqual(obj_dict_before_reload, obj_dict_after_reload)
+
+        # Check when file exists (__objects must be changed)
+        _ = BaseModel()  # add a new object to __objects
+        f.save()
+        _ = BaseModel()  # make changes to __objects after save
+
+        obj_dict_before_reload = {
+            key: obj.to_dict() for key, obj in f.all().items()
+        }
+
+        f.reload()
+        obj_dict_after_reload = {
+            key: obj.to_dict() for key, obj in f.all().items()
+        }
+        self.assertNotEqual(obj_dict_before_reload, obj_dict_after_reload)
 
     def test_all_method(self):
         """Check return type and value of the all method"""
