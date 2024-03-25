@@ -44,11 +44,11 @@ class FileStorage:
         """Deserializes the JSON file to a dictionary of objects"""
         try:
             with open(FileStorage.__file_path, "r") as file:
-                obj_dict = json.load(file)
+                json_obj_dict = json.load(file)
         except FileNotFoundError:
             pass
         else:
             FileStorage.__objects = {
                 key: eval("{}(**{})".format(o_dict["__class__"], o_dict))
-                for key, o_dict in obj_dict.items()
+                for key, o_dict in json_obj_dict.items()
             }
