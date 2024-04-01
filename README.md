@@ -1,4 +1,4 @@
-# 0x00. AirBnB clone - The console
+# 0x00. AirBnB clone
 
 ## Description
 
@@ -19,7 +19,7 @@ The project is built in steps:
 1. RESTful API
 1. Web dynamic
 
-This repo is for the console part of the AirBnB clone.
+This repo contains the console and web static part of the AirBnB clone.
 
 ## The console
 
