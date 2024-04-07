@@ -3,10 +3,7 @@ header {
   width: 100%;
   background-color: white;
   border-bottom: 1px solid #cccccc;
-}
-
-#logo {
-  margin-left: 20px;
-  margin-top: auto;
-  margin-bottom: auto;
+  background-image: url(../images/logo.png);
+  background-repeat: no-repeat;
+  background-position: 20px center;
 }
