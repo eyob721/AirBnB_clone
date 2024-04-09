@@ -121,3 +121,8 @@ The commands are:
 A preview of these commands is shown below.
 
 ![console_extra_commands](./assets/console_extra_commands.gif)
+
+## Web static
+
+After the console is built we built a front end for the AirBnB clone.
+At this stage only HTML and CSS is used with no JavaScript.
